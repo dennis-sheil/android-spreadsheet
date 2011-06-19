@@ -11,19 +11,53 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 public class Grad extends Activity {
 	GridView gridview;
+	TextView select;
+	int bigpos;
 
-	private String[] texts = { "a1", "b1", "c1", "d1", "e1", "a2", "b2", "c2",
-			"d2", "e2", "a3", "b3", "c3", "d3", "e3", "a4", "b4", "c4",
-			"dddddd dddddd", "e4", "a5", "b5", "c5", "d5", "e5", "a6", "b6",
-			"c6", "d6", "e6", "a7", "b7", "cccccccccccccccccccccccccz", "d7",
-			"e7", "a8", "b8", "c8", "d8", "e8", "a9", "b9", "c9", "d9", "e9",
-			"a10", "b10", "c10", "d10", "e10", "a11", "b11", "c11", "d11",
-			"e11", "a12", "b12", "c12", "d12", "e12", };
+	final int CELL_HEIGHT = 53;
+
+	private String[] texts = {
+			"a1",
+			"b1",
+			"c1",
+			"d1",
+			"e1",
+			"a2",
+			"b2",
+			"c2",
+			"d2",
+			"e2",
+			"a3",
+			"b3",
+			"c3",
+			"d3",
+			"e3",
+			"a4",
+			"b4",
+			"c4",
+			"dddddd dddddd",
+			"e4",
+			"a5",
+			"b5",
+			"c5",
+			"d5",
+			"e5",
+			"a6",
+			"b6",
+			"c6",
+			"d6",
+			"e6",
+			"a7",
+			"b7",
+			"ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccz",
+			"d7", "e7", "a8", "b8", "c8", "d8", "e8", "a9", "b9", "c9", "d9",
+			"e9", "a10", "b10", "c10", "d10", "e10" };
 
 	/** Called when the activity is first created. */
 	@Override
@@ -33,40 +67,14 @@ public class Grad extends Activity {
 		// doMoreStuff();
 	}
 
-	/*
-	void doMoreStuff() {
-		MyGridView gridview = new MyGridView(this);
-		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT));
-		gridview.setColumnWidth(94);
-		// gridview.setColumnWidth(95);
-		gridview.setHorizontalSpacing(1); // was 10dp
-		gridview.setVerticalSpacing(1); // was 10 dp
-		gridview.setGravity(Gravity.CENTER); // android:gravity="center"
-		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-		gridview.setNumColumns(-1);
-		gridview.setAdapter(new TextAdapter(this));
-		gridview.setBackgroundResource(R.color.dgrey); // grey background
-		MyView myview = new MyView(this);
-
-		// gridview.setOnKeyListener(new MyView.OnKeyListener());
-
-		setContentView(gridview);
-
-	}
-	*/
-
-
 	void doStuff() {
-		// LinearLayout ll = new LinearLayout(this);
-		// ll.setOrientation(LinearLayout.VERTICAL);
+		LinearLayout ll = new LinearLayout(this);
+		ll.setOrientation(LinearLayout.VERTICAL);
 
-		// GridView gridview = new GridView(this);
 		gridview = new GridView(this);
 		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 		gridview.setColumnWidth(94);
-		// gridview.setColumnWidth(95);
 		gridview.setHorizontalSpacing(1); // was 10dp
 		gridview.setVerticalSpacing(1); // was 10 dp
 		gridview.setGravity(Gravity.CENTER); // android:gravity="center"
@@ -81,71 +89,85 @@ public class Grad extends Activity {
 		gridview.setBackgroundResource(R.color.dgrey); // grey background
 
 		// gridview.setDrawSelectorOnTop(true); // hides cell
-		// gridview.setOnKeyListener(new MyView.OnKeyListener());
-
-		// int cip;
-		// int cip = gridview.getSelectedItemPosition();
 
 		gridview.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int i, KeyEvent k) {
-				// Log.d("gradkey",i + " " + k.toString());
-				// int h = v.getHeight();
-				// int down = v.getNextFocusDownId();
-				// int right = v.getNextFocusRightId();
 				int action = k.getAction();
+				// action 0 - off position
+				// action 1 - on position
+				int pos = gridview.getSelectedItemPosition();
 
-				// Log.d("gradkey",i + " " + h + " " + down + " " + right + " "
-				// + action);
+				// Log.d("gradkey", "" + pos + " " + action);
 
-				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
-					int cip = gridview.getSelectedItemPosition();
-					// Log.d("gradkey", "dpad-down " + cip);
-					if (cip < 55)
-						if (action == 0)
-							gridview.setSelection(cip + 5);
-				} else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					int cip = gridview.getSelectedItemPosition();
-					// Log.d("gradkey", "dpad-down " + cip);
-					if (cip > 4)
-						if (action == 0)
-							gridview.setSelection(cip - 5);
+				if (pos < 0) {
+					// Log.d("gradkey", "" + clickpos + " " + action);
+					pos = bigpos;
 				}
 
-				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					int cip = gridview.getSelectedItemPosition();
-					// Log.d("gradkey", "dpad-right " + cip);
-
-					if ((cip + 1) % 5 != 0 || cip == 0)
-						if (action == 0)
-							gridview.setSelection(cip + 1);
+				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
+					// Log.d("gradkey", "dpad-down " + pos);
+					if (pos < texts.length - 5)
+						if (action == 1) {
+							bigpos = pos + 5;
+							gridview.setSelection(bigpos);
+							select.setText(texts[bigpos]);
+						}
+				} else if (i == KeyEvent.KEYCODE_DPAD_UP) {
+					// Log.d("gradkey", "dpad-down " + pos);
+					if (pos > 4)
+						if (action == 1) {
+							bigpos = pos - 5;
+							gridview.setSelection(bigpos);
+							select.setText(texts[bigpos]);
+						}
+				} else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
+					// Log.d("gradkey", "dpad-right " + pos);
+					if ((pos + 1) % 5 != 0 || pos == 0)
+						if (action == 1) {
+							bigpos = pos + 1;
+							gridview.setSelection(bigpos);
+							select.setText(texts[bigpos]);
+						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
-					int cip = gridview.getSelectedItemPosition();
-					// Log.d("gradkey", "dpad-left " + cip);
-
-					if ((cip) % 5 != 0)
-						if (action == 0)
-							gridview.setSelection(cip - 1);
+					// Log.d("gradkey", "dpad-left " + pos);
+					if ((pos) % 5 != 0)
+						if (action == 1) {
+							bigpos = pos - 1;
+							gridview.setSelection(bigpos);
+							select.setText(texts[bigpos]);
+						}
 				}
 
 				return true;
 			}
 		});
 
-		// gridview.setDuplicateParentStateEnabled(true);
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT, 75);
 
-		// LinearLayout.LayoutParams layoutParams = new
-		// LinearLayout.LayoutParams(
-		// LinearLayout.LayoutParams.FILL_PARENT, 75);
+		TextView empty = new TextView(this);
 
-		// TextView empty = new TextView(this);
-		// ll.setBackgroundResource(R.color.dgrey); // grey background
+		LinearLayout.LayoutParams selectLayoutParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT, CELL_HEIGHT);
 
-		// ll.addView(empty, layoutParams);
+		// TextView select = new TextView(this);
+		TextView menu = new TextView(this);
+		menu.setBackgroundResource(R.color.ltblue);
 
-		// ll.addView(gridview);
+		select = new TextView(this);
+		select.setBackgroundResource(R.color.white);
+		select.setTextColor(Color.rgb(0, 0, 0)); // turns it black
 
-		setContentView(gridview);
-		// setContentView(ll);
+		ll.setBackgroundResource(R.color.dgrey); // grey background
+
+		ll.addView(empty, layoutParams);
+		ll.addView(menu, selectLayoutParams);
+		ll.addView(select, selectLayoutParams);
+
+		ll.addView(gridview);
+
+		// setContentView(gridview);
+		setContentView(ll);
 	}
 
 	public class TextAdapter extends BaseAdapter {
@@ -169,12 +191,12 @@ public class Grad extends Activity {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView tv;
+			final TextView tv;
 
 			if (convertView == null) {
 				tv = new TextView(context);
 
-				tv.setLayoutParams(new GridView.LayoutParams(95, 53));
+				tv.setLayoutParams(new GridView.LayoutParams(95, CELL_HEIGHT));
 			} else {
 				tv = (TextView) convertView;
 			}
@@ -186,23 +208,23 @@ public class Grad extends Activity {
 			tv.setTextColor(Color.rgb(0, 0, 0)); // turns it black
 
 			tv.setText(texts[position]);
-
-/*
-			tv.setDuplicateParentStateEnabled(true);
 			final int pos = position;
 
+			tv.setOnClickListener(new View.OnClickListener() {
 
-			tv.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				public void onFocusChange(View v, boolean b) {
-					String t;
-					if (b)
-						t = "true";
-					else
-						t = "false";
-					Log.d("grid", texts[pos] + " " + pos + " " + b);
+				@Override
+				public void onClick(View view) {
+					bigpos = pos;
+					Log.d("onClick", "position " + pos);
+					// tv.setBackgroundResource(R.color.green); // cells are
+					// white
+					tv.setBackgroundResource(R.drawable.click); // cells are
+					// white
+					select.setText(texts[pos]);
 				}
+
 			});
-*/
+
 			return tv;
 		}
 
