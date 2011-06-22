@@ -10,5 +10,6 @@
 	<color name="grey">#ffbebebe</color>
 	<color name="dgrey">#ddbebebe</color>
 	<color name="cgrey">#ccbebebe</color>
+	<color name="thgrey">#ffd3d3d3</color>
 	<color name="morange">#55ff9900</color>
 </resources>
