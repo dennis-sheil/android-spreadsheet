@@ -30,12 +30,15 @@ public class Grad extends Activity {
 	int CELL_WIDTH;
 	final int COLUMN_MARKER_HEIGHT = 25;
 
-	private String[] texts = { "a1", "b1", "c1", "d1", "e1", "a2", "b2", "c2",
-			"d2", "e2", "a3", "b3", "c3", "d3", "e3", "a4", "b4", "c4",
-			"dddddd dddddd", "e4", "a5", "b5", "c5", "d5", "e5", "a6", "b6",
-			"c6", "d6", "e6", "a7", "b7", "ccccc cccz", "d7", "e7", "a8", "b8",
-			"c8", "d8", "e8", "a9", "b9", "c9", "d9", "e9", "a10", "b10",
-			"c10", "d10", "e10" };
+	private String[] cellValue;
+
+	/*
+	 * texts = { "a1", "b1", "c1", "d1", "e1", "a2", "b2", "c2", "d2", "e2",
+	 * "a3", "b3", "c3", "d3", "e3", "a4", "b4", "c4", "dddddd dddddd", "e4",
+	 * "a5", "b5", "c5", "d5", "e5", "a6", "b6", "c6", "d6", "e6", "a7", "b7",
+	 * "ccccc cccz", "d7", "e7", "a8", "b8", "c8", "d8", "e8", "a9", "b9", "c9",
+	 * "d9", "e9", "a10", "b10", "c10", "d10", "e10" };
+	 */
 
 	/** Called when the activity is first created. */
 	@Override
@@ -80,6 +83,8 @@ public class Grad extends Activity {
 		tempWidth = tempWidth - (SCREEN_COLUMNS - 1);
 		CELL_WIDTH = tempWidth / SCREEN_COLUMNS;
 
+		cellValue = new String[24]; // temp
+
 		gridview = new GridView(this);
 		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
@@ -106,35 +111,35 @@ public class Grad extends Activity {
 
 				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
 					// Log.d("gradkey", "dpad-down " + pos);
-					if (pos < texts.length - 5)
+					if (pos < cellValue.length - SCREEN_COLUMNS)
 						if (action == ac) {
-							bigpos = pos + 5;
+							bigpos = pos + SCREEN_COLUMNS;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_UP) {
 					// Log.d("gradkey", "dpad-down " + pos);
-					if (pos > 4)
+					if (pos >= SCREEN_COLUMNS)
 						if (action == ac) {
-							bigpos = pos - 5;
+							bigpos = pos - SCREEN_COLUMNS;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
 					// Log.d("gradkey", "dpad-right " + pos);
-					if ((pos + 1) % 5 != 0 || pos == 0)
+					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0)
 						if (action == ac) {
 							bigpos = pos + 1;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
 					// Log.d("gradkey", "dpad-left " + pos);
-					if ((pos) % 5 != 0)
+					if ((pos) % SCREEN_COLUMNS != 0)
 						if (action == ac) {
 							bigpos = pos - 1;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				}
 
@@ -174,6 +179,13 @@ public class Grad extends Activity {
 		select.setBackgroundResource(R.color.white);
 		select.setTextColor(Color.rgb(0, 0, 0));
 
+		for (int k = 0; k < 16; k++)
+			cellValue[k] = Integer.toString(k + 1);
+
+		int firstPos = gridview.getSelectedItemPosition();
+		// Log.d("firstpos", Integer.toString(firstPos));
+		select.setText(cellValue[firstPos]);
+
 		LinearLayout ll = new LinearLayout(this);
 		ll.setOrientation(LinearLayout.VERTICAL);
 
@@ -203,7 +215,7 @@ public class Grad extends Activity {
 		}
 
 		public int getCount() {
-			return texts.length;
+			return cellValue.length;
 		}
 
 		public Object getItem(int position) {
@@ -229,7 +241,7 @@ public class Grad extends Activity {
 
 			tv.setTextColor(Color.rgb(0, 0, 0));
 
-			tv.setText(texts[position]);
+			tv.setText(cellValue[position]);
 			final int pos = position;
 
 			tv.setOnClickListener(new View.OnClickListener() {
@@ -238,7 +250,7 @@ public class Grad extends Activity {
 				public void onClick(View view) {
 					bigpos = pos;
 					tv.setBackgroundResource(R.drawable.click);
-					select.setText(texts[pos]);
+					select.setText(cellValue[pos]);
 				}
 
 			});
