@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -144,7 +145,13 @@ public class Grad extends Activity {
 		});
 
 		LinearLayout ll = new LinearLayout(this);
+
+		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
+
 		LinearLayout bottomll = new LinearLayout(this);
+
+		LinearLayout.LayoutParams cmLayoutParams = new LinearLayout.LayoutParams(
+				CELL_WIDTH + 1, COLUMN_MARKER_HEIGHT);
 
 		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, AD_HEIGHT);
@@ -152,28 +159,72 @@ public class Grad extends Activity {
 		LinearLayout.LayoutParams selectLayoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, CELL_HEIGHT);
 
-		LinearLayout.LayoutParams columnHeaderLayoutParams = new LinearLayout.LayoutParams(
+		LinearLayout.LayoutParams columnMarkerLayoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, COLUMN_MARKER_HEIGHT);
 
 		LinearLayout.LayoutParams rowMarkerLayoutParams = new LinearLayout.LayoutParams(
 				ROW_MARKER_WIDTH, LinearLayout.LayoutParams.FILL_PARENT);
 
+		LinearLayout.LayoutParams midMarkerParams = new LinearLayout.LayoutParams(
+				ROW_MARKER_WIDTH, COLUMN_MARKER_HEIGHT);
+
 		bottomll.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 
 		TextView empty = new TextView(this);
+		TextView emptyTwo = new TextView(this);
+		TextView cMarker[] = new TextView[SCREEN_COLUMNS];
+		TextView rMarker[] = new TextView[SCREEN_ROWS];
+
+		columnMarkerLinearLayout.addView(empty, midMarkerParams);
+
+		for (int i = 0; i < SCREEN_COLUMNS; i++) {
+			cMarker[i] = new TextView(this);
+			if (i == 0)
+				cMarker[i].setText("A");
+			else if (i == 1)
+				cMarker[i].setText("B");
+			else if (i == 2)
+				cMarker[i].setText("C");
+			else if (i == 3)
+				cMarker[i].setText("D");
+			else if (i == 4)
+				cMarker[i].setText("E");
+			else if (i == 5)
+				cMarker[i].setText("F");
+			else if (i == 6)
+				cMarker[i].setText("G");
+			else if (i == 7)
+				cMarker[i].setText("H");
+
+			cMarker[i].setTextColor(Color.rgb(0, 0, 0)); // turns it black
+			cMarker[i].setGravity(Gravity.CENTER_HORIZONTAL);
+			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
+			Log.d("another", "column header");
+		}
+
+		for (int j = 0; j < SCREEN_ROWS; j++) {
+			rMarker[j] = new TextView(this);
+			rMarker[j].setText(Integer.toString(j + 1));
+			// rMarker[j].setText(Integer.toString(j+101));
+			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
+			rMarker[j].setGravity(Gravity.CENTER);
+			// rll.addView(rMarker[j], rllLP);
+		}
+
 		TextView menu = new TextView(this);
-		TextView columnHeader = new TextView(this);
+		// TextView columnHeader = new TextView(this);
 		TextView rowMarker = new TextView(this);
 		select = new TextView(this);
 
 		menu.setBackgroundResource(R.color.ltblue);
-		columnHeader.setBackgroundResource(R.color.thgrey);
+		// columnHeader.setBackgroundResource(R.color.thgrey);
 		rowMarker.setBackgroundResource(R.color.thgrey);
 		select.setBackgroundResource(R.color.white);
 		ll.setBackgroundResource(R.color.dgrey);
+		columnMarkerLinearLayout.setBackgroundResource(R.color.thgrey);
 
-		columnHeader.setTextColor(Color.rgb(0, 0, 0));
+		// columnHeader.setTextColor(Color.rgb(0, 0, 0));
 		rowMarker.setTextColor(Color.rgb(0, 0, 0));
 		select.setTextColor(Color.rgb(0, 0, 0));
 
@@ -182,10 +233,11 @@ public class Grad extends Activity {
 		bottomll.addView(rowMarker, rowMarkerLayoutParams);
 		bottomll.addView(gridview);
 
-		ll.addView(empty, layoutParams);
+		ll.addView(emptyTwo, layoutParams);
 		ll.addView(menu, selectLayoutParams);
 		ll.addView(select, selectLayoutParams);
-		ll.addView(columnHeader, columnHeaderLayoutParams);
+		// ll.addView(columnHeader, columnHeaderLayoutParams);
+		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
 
 		ll.addView(bottomll);
 
