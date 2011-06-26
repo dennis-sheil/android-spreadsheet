@@ -25,19 +25,18 @@ public class Grad extends Activity {
 	int SCREEN_COLUMNS;
 	int SCREEN_ROWS;
 	int ROW_MARKER_WIDTH;
+	int CELL_WIDTH;
+	int CELL_HEIGHT;
+	// final int CELL_HEIGHT = 51;
 
 	final int AD_HEIGHT = 75;
-
-	final int CELL_HEIGHT = 51;
-	int CELL_WIDTH;
 	final int COLUMN_MARKER_HEIGHT = 25;
 
-	private String[] texts = { "a1", "b1", "c1", "d1", "e1", "a2", "b2", "c2",
-			"d2", "e2", "a3", "b3", "c3", "d3", "e3", "a4", "b4", "c4",
-			"dddddd dddddd", "e4", "a5", "b5", "c5", "d5", "e5", "a6", "b6",
-			"c6", "d6", "e6", "a7", "b7", "ccccc cccz", "d7", "e7", "a8", "b8",
-			"c8", "d8", "e8", "a9", "b9", "c9", "d9", "e9", "a10", "b10",
-			"c10", "d10", "e10" };
+	private String[] cellValue;
+
+	private static final int LOW_DPI_STATUS_BAR_HEIGHT = 19;
+	private static final int MEDIUM_DPI_STATUS_BAR_HEIGHT = 25;
+	private static final int HIGH_DPI_STATUS_BAR_HEIGHT = 38;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -52,13 +51,31 @@ public class Grad extends Activity {
 		((WindowManager) getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay().getMetrics(dm);
 
+		int statusBarHeight;
+
+		switch (dm.densityDpi) {
+		case DisplayMetrics.DENSITY_HIGH:
+			statusBarHeight = HIGH_DPI_STATUS_BAR_HEIGHT;
+			break;
+		case DisplayMetrics.DENSITY_MEDIUM:
+			statusBarHeight = MEDIUM_DPI_STATUS_BAR_HEIGHT;
+			break;
+		case DisplayMetrics.DENSITY_LOW:
+			statusBarHeight = LOW_DPI_STATUS_BAR_HEIGHT;
+			break;
+		default:
+			statusBarHeight = MEDIUM_DPI_STATUS_BAR_HEIGHT;
+		}
+
 		int mdpiHeightMin = 620;
+
+		CELL_HEIGHT = 51;
 
 		if (dm.heightPixels < dm.widthPixels) { // landscape
 			if (dm.heightPixels <= mdpiHeightMin) {
 				ROW_MARKER_WIDTH = 34;
-				SCREEN_ROWS = 6;
 				SCREEN_COLUMNS = 6;
+				SCREEN_ROWS = 6;
 			} else {
 				ROW_MARKER_WIDTH = 38;
 				SCREEN_COLUMNS = 8;
@@ -66,16 +83,35 @@ public class Grad extends Activity {
 			}
 		} else { // portrait
 			if (dm.heightPixels <= mdpiHeightMin) {
-				SCREEN_ROWS = 12;
 				ROW_MARKER_WIDTH = 38;
 				SCREEN_COLUMNS = 4;
-
+				SCREEN_ROWS = 12;
 			} else {
-				SCREEN_ROWS = 18;
 				ROW_MARKER_WIDTH = 38;
 				SCREEN_COLUMNS = 5;
+				SCREEN_ROWS = 18;
 			}
 		}
+
+		int tempHeight = dm.heightPixels;
+		// tempHeight = tempHeight - SELECT_HEIGHT;
+		tempHeight = tempHeight - AD_HEIGHT;
+		tempHeight = tempHeight - COLUMN_MARKER_HEIGHT;
+		tempHeight = tempHeight - (statusBarHeight * 2);
+		tempHeight = tempHeight - (SCREEN_ROWS - 1);
+		CELL_HEIGHT = tempHeight / (SCREEN_ROWS + 2); // plus select and menu
+		// Log.d("cell height", Integer.toString(CELL_HEIGHT));
+		tempHeight = tempHeight - (CELL_HEIGHT * (SCREEN_ROWS + 2));
+
+		// Log.d("precell height", Integer.toString(tempHeight));
+		// int EXTRA_HEIGHT = (tempHeight % SCREEN_ROWS);
+		int EXTRA_HEIGHT = tempHeight;
+		Log.d("extraa", Integer.toString(EXTRA_HEIGHT));
+
+		// int SELECT_HEIGHT = CELL_HEIGHT + EXTRA_HEIGHT;
+		int SELECT_HEIGHT = CELL_HEIGHT + EXTRA_HEIGHT;
+
+		cellValue = new String[SCREEN_COLUMNS * SCREEN_ROWS];
 
 		int tempWidth = dm.widthPixels;
 		tempWidth = tempWidth - ROW_MARKER_WIDTH;
@@ -108,11 +144,11 @@ public class Grad extends Activity {
 
 				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
 					// Log.d("gradkey", "dpad-down " + pos);
-					if (pos < texts.length - SCREEN_COLUMNS)
+					if (pos < cellValue.length - SCREEN_COLUMNS)
 						if (action == ac) {
 							bigpos = pos + SCREEN_COLUMNS;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_UP) {
 					// Log.d("gradkey", "dpad-down " + pos);
@@ -120,7 +156,7 @@ public class Grad extends Activity {
 						if (action == ac) {
 							bigpos = pos - SCREEN_COLUMNS;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
 					// Log.d("gradkey", "dpad-right " + pos);
@@ -128,7 +164,7 @@ public class Grad extends Activity {
 						if (action == ac) {
 							bigpos = pos + 1;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
 					// Log.d("gradkey", "dpad-left " + pos);
@@ -136,7 +172,7 @@ public class Grad extends Activity {
 						if (action == ac) {
 							bigpos = pos - 1;
 							gridview.setSelection(bigpos);
-							select.setText(texts[bigpos]);
+							select.setText(cellValue[bigpos]);
 						}
 				}
 
@@ -156,6 +192,9 @@ public class Grad extends Activity {
 				LinearLayout.LayoutParams.FILL_PARENT, AD_HEIGHT);
 
 		LinearLayout.LayoutParams selectLayoutParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT, SELECT_HEIGHT);
+
+		LinearLayout.LayoutParams menuLayoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, CELL_HEIGHT);
 
 		LinearLayout.LayoutParams columnMarkerLayoutParams = new LinearLayout.LayoutParams(
@@ -232,14 +271,12 @@ public class Grad extends Activity {
 		rll.setOrientation(LinearLayout.VERTICAL);
 		ll.setOrientation(LinearLayout.VERTICAL);
 
-		// bottomll.addView(rowMarker, rowMarkerLayoutParams);
 		bottomll.addView(rll, rowMarkerLayoutParams);
 		bottomll.addView(gridview);
 
 		ll.addView(emptyTwo, layoutParams);
-		ll.addView(menu, selectLayoutParams);
+		ll.addView(menu, menuLayoutParams);
 		ll.addView(select, selectLayoutParams);
-		// ll.addView(columnHeader, columnHeaderLayoutParams);
 		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
 
 		ll.addView(bottomll);
@@ -256,7 +293,7 @@ public class Grad extends Activity {
 		}
 
 		public int getCount() {
-			return texts.length;
+			return cellValue.length;
 		}
 
 		public Object getItem(int position) {
@@ -282,7 +319,7 @@ public class Grad extends Activity {
 
 			tv.setTextColor(Color.rgb(0, 0, 0));
 
-			tv.setText(texts[position]);
+			tv.setText(cellValue[position]);
 			final int pos = position;
 
 			tv.setOnClickListener(new View.OnClickListener() {
@@ -291,7 +328,7 @@ public class Grad extends Activity {
 				public void onClick(View view) {
 					bigpos = pos;
 					tv.setBackgroundResource(R.drawable.click);
-					select.setText(texts[pos]);
+					select.setText(cellValue[pos]);
 				}
 
 			});
