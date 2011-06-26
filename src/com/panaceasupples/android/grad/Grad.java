@@ -23,6 +23,7 @@ public class Grad extends Activity {
 
 	private int bigpos;
 	private int rowsDown;
+	private int rowsRight;
 
 	private int SCREEN_COLUMNS;
 	private int SCREEN_ROWS;
@@ -35,6 +36,7 @@ public class Grad extends Activity {
 
 	private String[] cellValue;
 	private TextView rMarker[];
+	private TextView cMarker[];
 
 	private static final int LOW_DPI_STATUS_BAR_HEIGHT = 19;
 	private static final int MEDIUM_DPI_STATUS_BAR_HEIGHT = 25;
@@ -118,8 +120,8 @@ public class Grad extends Activity {
 
 		TextView empty = new TextView(this);
 		TextView emptyTwo = new TextView(this);
-		TextView cMarker[] = new TextView[SCREEN_COLUMNS];
-		// TextView rMarker[] = new TextView[SCREEN_ROWS];
+		// TextView cMarker[] = new TextView[SCREEN_COLUMNS];
+		cMarker = new TextView[SCREEN_COLUMNS];
 		rMarker = new TextView[SCREEN_ROWS];
 
 		LinearLayout ll = new LinearLayout(this);
@@ -155,6 +157,7 @@ public class Grad extends Activity {
 				LayoutParams.FILL_PARENT));
 
 		rowsDown = 0;
+		rowsRight = 0;
 
 		for (int j = 0; j < SCREEN_ROWS; j++) {
 			rMarker[j] = new TextView(this);
@@ -207,7 +210,8 @@ public class Grad extends Activity {
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					Log.d("screen-columns " + SCREEN_COLUMNS, "dpad-up " + pos);
+					// Log.d("screen-columns " + SCREEN_COLUMNS, "dpad-up " +
+					// pos);
 					if (pos >= SCREEN_COLUMNS) {
 						if (action == ac) {
 							bigpos = pos - SCREEN_COLUMNS;
@@ -229,14 +233,24 @@ public class Grad extends Activity {
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					// Log.d("gradkey", "dpad-right " + pos);
-					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0)
+					//Log.d("gradkey", "dpad-right " + pos);
+					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0) {
 						if (action == ac) {
 							bigpos = pos + 1;
 							gridview.setSelection(bigpos);
 							select.setText(cellValue[bigpos]);
 						}
-				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
+					} else {
+						if (action == ac) { // end somewhere
+							rowsRight++;
+							for (int j = 0; j < SCREEN_COLUMNS; j++) {
+								cMarker[j].setText(numToColumn(j + rowsRight));
+							}
+						}
+					}
+				}
+
+				else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
 					// Log.d("gradkey", "dpad-left " + pos);
 					if ((pos) % SCREEN_COLUMNS != 0)
 						if (action == ac) {
