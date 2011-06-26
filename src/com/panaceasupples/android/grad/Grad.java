@@ -182,10 +182,8 @@ public class Grad extends Activity {
 				// action 0 - off position
 				// action 1 - on position
 				int pos = gridview.getSelectedItemPosition();
-
-				if (pos < 0) {
+				if (pos < 0)
 					pos = bigpos;
-				}
 
 				int ac = 0; // off (1 is on)
 
@@ -198,14 +196,12 @@ public class Grad extends Activity {
 							select.setText(cellValue[bigpos]);
 						}
 					} else {
-						if (action == ac && rowsDown < 970) { // bottom going
-							// down
+						if (action == ac && rowsDown < 970) { // bottom downward
 							rowsDown++;
 							for (int j = 0; j < SCREEN_ROWS; j++) {
 								rMarker[j].setText(Integer.toString(j + 1
 										+ rowsDown));
 							}
-
 						}
 					}
 				}
@@ -213,13 +209,11 @@ public class Grad extends Activity {
 				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
 					Log.d("screen-columns " + SCREEN_COLUMNS, "dpad-up " + pos);
 					if (pos >= SCREEN_COLUMNS) {
-						// if (rowsDown == 0) {
 						if (action == ac) {
 							bigpos = pos - SCREEN_COLUMNS;
 							gridview.setSelection(bigpos);
 							select.setText(cellValue[bigpos]);
 						}
-						// }
 					} else {
 						if (rowsDown > 0) {
 							if (action == ac) {
@@ -256,46 +250,16 @@ public class Grad extends Activity {
 			}
 		});
 
-		/*
-		 * TextView empty = new TextView(this); TextView emptyTwo = new
-		 * TextView(this); TextView cMarker[] = new TextView[SCREEN_COLUMNS];
-		 * TextView rMarker[] = new TextView[SCREEN_ROWS];
-		 */
-
 		columnMarkerLinearLayout.addView(empty, midMarkerParams);
 
 		for (int i = 0; i < SCREEN_COLUMNS; i++) {
 			cMarker[i] = new TextView(this);
-			if (i == 0)
-				cMarker[i].setText("A");
-			else if (i == 1)
-				cMarker[i].setText("B");
-			else if (i == 2)
-				cMarker[i].setText("C");
-			else if (i == 3)
-				cMarker[i].setText("D");
-			else if (i == 4)
-				cMarker[i].setText("E");
-			else if (i == 5)
-				cMarker[i].setText("F");
-			else if (i == 6)
-				cMarker[i].setText("G");
-			else if (i == 7)
-				cMarker[i].setText("H");
-
+			cMarker[i].setText(numToColumn(i));
 			cMarker[i].setTextColor(Color.rgb(0, 0, 0)); // turns it black
 			cMarker[i].setGravity(Gravity.CENTER_HORIZONTAL);
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
 		}
 
-		/*
-		 * for (int j = 0; j < SCREEN_ROWS; j++) { rMarker[j] = new
-		 * TextView(this); rMarker[j].setText(Integer.toString(j + 1)); //
-		 * rMarker[j].setText(Integer.toString(j+101));
-		 * rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
-		 * rMarker[j].setGravity(Gravity.CENTER); rll.addView(rMarker[j],
-		 * rMarkerLayoutParams); }
-		 */
 		for (int k = 0; k < 16; k++)
 			cellValue[k] = Integer.toString(k + 1);
 
@@ -329,6 +293,102 @@ public class Grad extends Activity {
 		select.setText(cellValue[firstPos]);
 
 		setContentView(ll);
+	}
+
+	String numToColumn(int i) {
+		boolean go = true;
+		String t = "";
+		while (go) {
+			int x = i % 26;
+			String s = "";
+			switch (x) {
+			case 0:
+				s = "A";
+				break;
+			case 1:
+				s = "B";
+				break;
+			case 2:
+				s = "C";
+				break;
+			case 3:
+				s = "D";
+				break;
+			case 4:
+				s = "E";
+				break;
+			case 5:
+				s = "F";
+				break;
+			case 6:
+				s = "G";
+				break;
+			case 7:
+				s = "H";
+				break;
+			case 8:
+				s = "I";
+				break;
+			case 9:
+				s = "J";
+				break;
+			case 10:
+				s = "K";
+				break;
+			case 11:
+				s = "L";
+				break;
+			case 12:
+				s = "M";
+				break;
+			case 13:
+				s = "N";
+				break;
+			case 14:
+				s = "O";
+				break;
+			case 15:
+				s = "P";
+				break;
+			case 16:
+				s = "Q";
+				break;
+			case 17:
+				s = "R";
+				break;
+			case 18:
+				s = "S";
+				break;
+			case 19:
+				s = "T";
+				break;
+			case 20:
+				s = "U";
+				break;
+			case 21:
+				s = "V";
+				break;
+			case 22:
+				s = "W";
+				break;
+			case 23:
+				s = "X";
+				break;
+			case 24:
+				s = "Y";
+				break;
+			case 25:
+				s = "Z";
+				break;
+			}
+
+			t = s + t;
+			if (i < 26)
+				go = false;
+			i = i / 26;
+			i--;
+		}
+		return t;
 	}
 
 	public class TextAdapter extends BaseAdapter {
