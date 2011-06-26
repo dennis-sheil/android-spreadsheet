@@ -145,10 +145,9 @@ public class Grad extends Activity {
 		});
 
 		LinearLayout ll = new LinearLayout(this);
-
 		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
-
 		LinearLayout bottomll = new LinearLayout(this);
+		LinearLayout rll = new LinearLayout(this);
 
 		LinearLayout.LayoutParams cmLayoutParams = new LinearLayout.LayoutParams(
 				CELL_WIDTH + 1, COLUMN_MARKER_HEIGHT);
@@ -164,6 +163,9 @@ public class Grad extends Activity {
 
 		LinearLayout.LayoutParams rowMarkerLayoutParams = new LinearLayout.LayoutParams(
 				ROW_MARKER_WIDTH, LinearLayout.LayoutParams.FILL_PARENT);
+
+		LinearLayout.LayoutParams rMarkerLayoutParams = new LinearLayout.LayoutParams(
+				ROW_MARKER_WIDTH, CELL_HEIGHT + 1);
 
 		LinearLayout.LayoutParams midMarkerParams = new LinearLayout.LayoutParams(
 				ROW_MARKER_WIDTH, COLUMN_MARKER_HEIGHT);
@@ -209,17 +211,16 @@ public class Grad extends Activity {
 			// rMarker[j].setText(Integer.toString(j+101));
 			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
 			rMarker[j].setGravity(Gravity.CENTER);
-			// rll.addView(rMarker[j], rllLP);
+			rll.addView(rMarker[j], rMarkerLayoutParams);
 		}
 
 		TextView menu = new TextView(this);
-		// TextView columnHeader = new TextView(this);
 		TextView rowMarker = new TextView(this);
 		select = new TextView(this);
 
 		menu.setBackgroundResource(R.color.ltblue);
-		// columnHeader.setBackgroundResource(R.color.thgrey);
 		rowMarker.setBackgroundResource(R.color.thgrey);
+		rll.setBackgroundResource(R.color.thgrey);
 		select.setBackgroundResource(R.color.white);
 		ll.setBackgroundResource(R.color.dgrey);
 		columnMarkerLinearLayout.setBackgroundResource(R.color.thgrey);
@@ -228,9 +229,11 @@ public class Grad extends Activity {
 		rowMarker.setTextColor(Color.rgb(0, 0, 0));
 		select.setTextColor(Color.rgb(0, 0, 0));
 
+		rll.setOrientation(LinearLayout.VERTICAL);
 		ll.setOrientation(LinearLayout.VERTICAL);
 
-		bottomll.addView(rowMarker, rowMarkerLayoutParams);
+		// bottomll.addView(rowMarker, rowMarkerLayoutParams);
+		bottomll.addView(rll, rowMarkerLayoutParams);
 		bottomll.addView(gridview);
 
 		ll.addView(emptyTwo, layoutParams);
