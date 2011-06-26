@@ -18,19 +18,19 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 public class Grad extends Activity {
-	GridView gridview;
-	TextView select;
-	int bigpos;
+	private GridView gridview;
+	private TextView select;
 
-	int SCREEN_COLUMNS;
-	int SCREEN_ROWS;
-	int ROW_MARKER_WIDTH;
-	int CELL_WIDTH;
-	int CELL_HEIGHT;
-	// final int CELL_HEIGHT = 51;
+	private int bigpos;
 
-	final int AD_HEIGHT = 75;
-	final int COLUMN_MARKER_HEIGHT = 25;
+	private int SCREEN_COLUMNS;
+	private int SCREEN_ROWS;
+	private int ROW_MARKER_WIDTH;
+	private int CELL_WIDTH;
+	private int CELL_HEIGHT;
+
+	private final int AD_HEIGHT = 75;
+	private final int COLUMN_MARKER_HEIGHT = 25;
 
 	private String[] cellValue;
 
@@ -69,13 +69,13 @@ public class Grad extends Activity {
 
 		int mdpiHeightMin = 620;
 
-		CELL_HEIGHT = 51;
-
 		if (dm.heightPixels < dm.widthPixels) { // landscape
 			if (dm.heightPixels <= mdpiHeightMin) {
 				ROW_MARKER_WIDTH = 34;
-				SCREEN_COLUMNS = 6;
-				SCREEN_ROWS = 6;
+				// SCREEN_COLUMNS = 6;
+				SCREEN_COLUMNS = 5;
+				// SCREEN_ROWS = 6;
+				SCREEN_ROWS = 7;
 			} else {
 				ROW_MARKER_WIDTH = 38;
 				SCREEN_COLUMNS = 8;
@@ -88,27 +88,21 @@ public class Grad extends Activity {
 				SCREEN_ROWS = 12;
 			} else {
 				ROW_MARKER_WIDTH = 38;
-				SCREEN_COLUMNS = 5;
+				// SCREEN_COLUMNS = 5;
+				SCREEN_COLUMNS = 4;
 				SCREEN_ROWS = 18;
 			}
 		}
 
 		int tempHeight = dm.heightPixels;
-		// tempHeight = tempHeight - SELECT_HEIGHT;
 		tempHeight = tempHeight - AD_HEIGHT;
 		tempHeight = tempHeight - COLUMN_MARKER_HEIGHT;
 		tempHeight = tempHeight - (statusBarHeight * 2);
 		tempHeight = tempHeight - (SCREEN_ROWS - 1);
+
 		CELL_HEIGHT = tempHeight / (SCREEN_ROWS + 2); // plus select and menu
-		// Log.d("cell height", Integer.toString(CELL_HEIGHT));
 		tempHeight = tempHeight - (CELL_HEIGHT * (SCREEN_ROWS + 2));
-
-		// Log.d("precell height", Integer.toString(tempHeight));
-		// int EXTRA_HEIGHT = (tempHeight % SCREEN_ROWS);
 		int EXTRA_HEIGHT = tempHeight;
-		Log.d("extraa", Integer.toString(EXTRA_HEIGHT));
-
-		// int SELECT_HEIGHT = CELL_HEIGHT + EXTRA_HEIGHT;
 		int SELECT_HEIGHT = CELL_HEIGHT + EXTRA_HEIGHT;
 
 		cellValue = new String[SCREEN_COLUMNS * SCREEN_ROWS];
@@ -117,6 +111,8 @@ public class Grad extends Activity {
 		tempWidth = tempWidth - ROW_MARKER_WIDTH;
 		tempWidth = tempWidth - (SCREEN_COLUMNS - 1);
 		CELL_WIDTH = tempWidth / SCREEN_COLUMNS;
+		tempWidth = tempWidth - (CELL_WIDTH * SCREEN_COLUMNS);
+		ROW_MARKER_WIDTH = ROW_MARKER_WIDTH + tempWidth;
 
 		gridview = new GridView(this);
 		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
@@ -241,7 +237,6 @@ public class Grad extends Activity {
 			cMarker[i].setTextColor(Color.rgb(0, 0, 0)); // turns it black
 			cMarker[i].setGravity(Gravity.CENTER_HORIZONTAL);
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
-			Log.d("another", "column header");
 		}
 
 		for (int j = 0; j < SCREEN_ROWS; j++) {
@@ -252,6 +247,9 @@ public class Grad extends Activity {
 			rMarker[j].setGravity(Gravity.CENTER);
 			rll.addView(rMarker[j], rMarkerLayoutParams);
 		}
+
+		for (int k = 0; k < 16; k++)
+			cellValue[k] = Integer.toString(k + 1);
 
 		TextView menu = new TextView(this);
 		TextView rowMarker = new TextView(this);
@@ -264,7 +262,6 @@ public class Grad extends Activity {
 		ll.setBackgroundResource(R.color.dgrey);
 		columnMarkerLinearLayout.setBackgroundResource(R.color.thgrey);
 
-		// columnHeader.setTextColor(Color.rgb(0, 0, 0));
 		rowMarker.setTextColor(Color.rgb(0, 0, 0));
 		select.setTextColor(Color.rgb(0, 0, 0));
 
@@ -280,6 +277,9 @@ public class Grad extends Activity {
 		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
 
 		ll.addView(bottomll);
+
+		int firstPos = gridview.getSelectedItemPosition();
+		select.setText(cellValue[firstPos]);
 
 		setContentView(ll);
 	}
