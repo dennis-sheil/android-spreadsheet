@@ -191,7 +191,6 @@ public class Grad extends Activity {
 				int ac = 0; // off (1 is on)
 
 				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
-					// Log.d("gradkey", "dpad-down " + pos);
 					if (pos < cellValue.length - SCREEN_COLUMNS) {
 						if (action == ac) {
 							bigpos = pos + SCREEN_COLUMNS;
@@ -210,8 +209,6 @@ public class Grad extends Activity {
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					// Log.d("screen-columns " + SCREEN_COLUMNS, "dpad-up " +
-					// pos);
 					if (pos >= SCREEN_COLUMNS) {
 						if (action == ac) {
 							bigpos = pos - SCREEN_COLUMNS;
@@ -233,7 +230,6 @@ public class Grad extends Activity {
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					//Log.d("gradkey", "dpad-right " + pos);
 					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0) {
 						if (action == ac) {
 							bigpos = pos + 1;
@@ -241,7 +237,7 @@ public class Grad extends Activity {
 							select.setText(cellValue[bigpos]);
 						}
 					} else {
-						if (action == ac) { // end somewhere
+						if (action == ac) {
 							rowsRight++;
 							for (int j = 0; j < SCREEN_COLUMNS; j++) {
 								cMarker[j].setText(numToColumn(j + rowsRight));
@@ -251,13 +247,25 @@ public class Grad extends Activity {
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
-					// Log.d("gradkey", "dpad-left " + pos);
-					if ((pos) % SCREEN_COLUMNS != 0)
+					if ((pos) % SCREEN_COLUMNS != 0) {
 						if (action == ac) {
 							bigpos = pos - 1;
 							gridview.setSelection(bigpos);
 							select.setText(cellValue[bigpos]);
 						}
+					} else {
+
+						if (rowsRight > 0) {
+							if (action == ac) {
+								rowsRight--;
+								for (int j = 0; j < SCREEN_COLUMNS; j++) {
+									cMarker[j].setText(numToColumn(j
+											+ rowsRight));
+								}
+							}
+						}
+
+					}
 				}
 
 				return true;
