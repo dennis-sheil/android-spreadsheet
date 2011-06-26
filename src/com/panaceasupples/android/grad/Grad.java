@@ -22,6 +22,7 @@ public class Grad extends Activity {
 	private TextView select;
 
 	private int bigpos;
+	private int rowsDown;
 
 	private int SCREEN_COLUMNS;
 	private int SCREEN_ROWS;
@@ -33,6 +34,7 @@ public class Grad extends Activity {
 	private final int COLUMN_MARKER_HEIGHT = 25;
 
 	private String[] cellValue;
+	private TextView rMarker[];
 
 	private static final int LOW_DPI_STATUS_BAR_HEIGHT = 19;
 	private static final int MEDIUM_DPI_STATUS_BAR_HEIGHT = 25;
@@ -114,67 +116,11 @@ public class Grad extends Activity {
 		tempWidth = tempWidth - (CELL_WIDTH * SCREEN_COLUMNS);
 		ROW_MARKER_WIDTH = ROW_MARKER_WIDTH + tempWidth;
 
-		gridview = new GridView(this);
-		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT));
-		gridview.setColumnWidth(CELL_WIDTH);
-		gridview.setHorizontalSpacing(1);
-		gridview.setVerticalSpacing(1);
-		gridview.setGravity(Gravity.CENTER);
-		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-		gridview.setNumColumns(-1);
-		gridview.setAdapter(new TextAdapter(this));
-		gridview.setBackgroundResource(R.color.dgrey);
-		gridview.setOnKeyListener(new View.OnKeyListener() {
-			public boolean onKey(View v, int i, KeyEvent k) {
-				int action = k.getAction();
-				// action 0 - off position
-				// action 1 - on position
-				int pos = gridview.getSelectedItemPosition();
-
-				if (pos < 0) {
-					pos = bigpos;
-				}
-
-				int ac = 0; // off (1 is on)
-
-				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
-					// Log.d("gradkey", "dpad-down " + pos);
-					if (pos < cellValue.length - SCREEN_COLUMNS)
-						if (action == ac) {
-							bigpos = pos + SCREEN_COLUMNS;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-				} else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					// Log.d("gradkey", "dpad-down " + pos);
-					if (pos >= SCREEN_COLUMNS)
-						if (action == ac) {
-							bigpos = pos - SCREEN_COLUMNS;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-				} else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					// Log.d("gradkey", "dpad-right " + pos);
-					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0)
-						if (action == ac) {
-							bigpos = pos + 1;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
-					// Log.d("gradkey", "dpad-left " + pos);
-					if ((pos) % SCREEN_COLUMNS != 0)
-						if (action == ac) {
-							bigpos = pos - 1;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-				}
-
-				return true;
-			}
-		});
+		TextView empty = new TextView(this);
+		TextView emptyTwo = new TextView(this);
+		TextView cMarker[] = new TextView[SCREEN_COLUMNS];
+		// TextView rMarker[] = new TextView[SCREEN_ROWS];
+		rMarker = new TextView[SCREEN_ROWS];
 
 		LinearLayout ll = new LinearLayout(this);
 		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
@@ -208,10 +154,113 @@ public class Grad extends Activity {
 		bottomll.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 
-		TextView empty = new TextView(this);
-		TextView emptyTwo = new TextView(this);
-		TextView cMarker[] = new TextView[SCREEN_COLUMNS];
-		TextView rMarker[] = new TextView[SCREEN_ROWS];
+		rowsDown = 0;
+
+		for (int j = 0; j < SCREEN_ROWS; j++) {
+			rMarker[j] = new TextView(this);
+			rMarker[j].setText(Integer.toString(j + rowsDown + 1));
+			// rMarker[j].setText(Integer.toString(j+101));
+			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
+			rMarker[j].setGravity(Gravity.CENTER);
+			rll.addView(rMarker[j], rMarkerLayoutParams);
+		}
+
+		gridview = new GridView(this);
+		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.FILL_PARENT));
+		gridview.setColumnWidth(CELL_WIDTH);
+		gridview.setHorizontalSpacing(1);
+		gridview.setVerticalSpacing(1);
+		gridview.setGravity(Gravity.CENTER);
+		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+		gridview.setNumColumns(-1);
+		gridview.setAdapter(new TextAdapter(this));
+		gridview.setBackgroundResource(R.color.dgrey);
+		gridview.setOnKeyListener(new View.OnKeyListener() {
+			public boolean onKey(View v, int i, KeyEvent k) {
+				int action = k.getAction();
+				// action 0 - off position
+				// action 1 - on position
+				int pos = gridview.getSelectedItemPosition();
+
+				if (pos < 0) {
+					pos = bigpos;
+				}
+
+				int ac = 0; // off (1 is on)
+
+				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
+					// Log.d("gradkey", "dpad-down " + pos);
+					if (pos < cellValue.length - SCREEN_COLUMNS) {
+						if (action == ac) {
+							bigpos = pos + SCREEN_COLUMNS;
+							gridview.setSelection(bigpos);
+							select.setText(cellValue[bigpos]);
+						}
+					} else {
+						if (action == ac && rowsDown < 970) { // bottom going
+							// down
+							rowsDown++;
+							for (int j = 0; j < SCREEN_ROWS; j++) {
+								rMarker[j].setText(Integer.toString(j + 1
+										+ rowsDown));
+							}
+
+						}
+					}
+				}
+
+				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
+					Log.d("screen-columns " + SCREEN_COLUMNS, "dpad-up " + pos);
+					if (pos >= SCREEN_COLUMNS) {
+						// if (rowsDown == 0) {
+						if (action == ac) {
+							bigpos = pos - SCREEN_COLUMNS;
+							gridview.setSelection(bigpos);
+							select.setText(cellValue[bigpos]);
+						}
+						// }
+					} else {
+						if (rowsDown > 0) {
+							if (action == ac) {
+								rowsDown--;
+								for (int j = 0; j < SCREEN_ROWS; j++) {
+									rMarker[j].setText(Integer.toString(j + 1
+											+ rowsDown));
+								}
+							}
+						}
+					}
+
+				}
+
+				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
+					// Log.d("gradkey", "dpad-right " + pos);
+					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0)
+						if (action == ac) {
+							bigpos = pos + 1;
+							gridview.setSelection(bigpos);
+							select.setText(cellValue[bigpos]);
+						}
+				} else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
+					// Log.d("gradkey", "dpad-left " + pos);
+					if ((pos) % SCREEN_COLUMNS != 0)
+						if (action == ac) {
+							bigpos = pos - 1;
+							gridview.setSelection(bigpos);
+							select.setText(cellValue[bigpos]);
+						}
+				}
+
+				return true;
+			}
+		});
+
+		/*
+		 * TextView empty = new TextView(this); TextView emptyTwo = new
+		 * TextView(this); TextView cMarker[] = new TextView[SCREEN_COLUMNS];
+		 * TextView rMarker[] = new TextView[SCREEN_ROWS];
+		 */
 
 		columnMarkerLinearLayout.addView(empty, midMarkerParams);
 
@@ -239,15 +288,14 @@ public class Grad extends Activity {
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
 		}
 
-		for (int j = 0; j < SCREEN_ROWS; j++) {
-			rMarker[j] = new TextView(this);
-			rMarker[j].setText(Integer.toString(j + 1));
-			// rMarker[j].setText(Integer.toString(j+101));
-			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
-			rMarker[j].setGravity(Gravity.CENTER);
-			rll.addView(rMarker[j], rMarkerLayoutParams);
-		}
-
+		/*
+		 * for (int j = 0; j < SCREEN_ROWS; j++) { rMarker[j] = new
+		 * TextView(this); rMarker[j].setText(Integer.toString(j + 1)); //
+		 * rMarker[j].setText(Integer.toString(j+101));
+		 * rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
+		 * rMarker[j].setGravity(Gravity.CENTER); rll.addView(rMarker[j],
+		 * rMarkerLayoutParams); }
+		 */
 		for (int k = 0; k < 16; k++)
 			cellValue[k] = Integer.toString(k + 1);
 
@@ -275,7 +323,6 @@ public class Grad extends Activity {
 		ll.addView(menu, menuLayoutParams);
 		ll.addView(select, selectLayoutParams);
 		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
-
 		ll.addView(bottomll);
 
 		int firstPos = gridview.getSelectedItemPosition();
