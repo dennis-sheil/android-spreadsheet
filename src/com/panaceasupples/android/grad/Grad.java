@@ -1,5 +1,13 @@
 package com.panaceasupples.android.grad;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -31,6 +39,9 @@ public class Grad extends Activity {
 	private int CELL_WIDTH;
 	private int CELL_HEIGHT;
 
+	private int COLUMN_SIZE;
+	private int ROW_SIZE;
+
 	private final int AD_HEIGHT = 75;
 	private final int COLUMN_MARKER_HEIGHT = 25;
 	private int DATA_SIZE = 20;
@@ -53,11 +64,15 @@ public class Grad extends Activity {
 		doStuff();
 	}
 
+	private static HSSFWorkbook readFile(String filename) throws IOException {
+		return new HSSFWorkbook(new FileInputStream(filename));
+	}
+
 	void doStuff() {
 
-		data = new String[DATA_SIZE][DATA_SIZE];
-		data[0][0] = "1";
-		data[7][0] = "7";
+		// data = new String[DATA_SIZE][DATA_SIZE];
+		// data[0][0] = "1";
+		// data[7][0] = "7";
 
 		DisplayMetrics dm = new DisplayMetrics();
 		((WindowManager) getSystemService(Context.WINDOW_SERVICE))
@@ -306,6 +321,7 @@ public class Grad extends Activity {
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
 		}
 
+		doExcelStuff();
 		dataToScreen();
 
 		TextView menu = new TextView(this);
@@ -335,16 +351,109 @@ public class Grad extends Activity {
 		ll.addView(bottomll);
 
 		int firstPos = gridview.getSelectedItemPosition();
-		select.setText(cellValue[firstPos]);
+		// Log.d("firstpos is", firstPos + "");
+		if (firstPos > 0)
+			select.setText(cellValue[firstPos]);
+		// ^^ kludgey, unneeded
 
 		setContentView(ll);
+
+	}
+
+	void doExcelStuff() {
+		String fileName = "/sdcard/docket.xls";
+		// HSSFWorkbook wb = HSSFReadWrite.readFile(fileName);
+		Log.d("des", "1");
+
+		try {
+			Log.d("des", "1.25 ");
+
+			FileInputStream fis = new FileInputStream(fileName);
+			Log.d("des", "1.5 ");
+
+			// HSSFWorkbook wb = readFile(fileName);
+			// HSSFWorkbook wb = Grad.readFile(fileName);
+			HSSFWorkbook wb = new HSSFWorkbook(fis);
+			Log.d("des", "2 ");
+
+			HSSFSheet sheet = wb.getSheetAt(0); // 0 means get first sheet
+			Log.d("des", "3");
+
+			int rows = sheet.getPhysicalNumberOfRows();
+			Log.d("des", "4");
+
+			int mostcells = 0;
+			Log.d("des", "5");
+
+			for (int r = 0; r < rows; r++) {
+				HSSFRow row = sheet.getRow(r);
+				if (row == null)
+					continue;
+				int cells = row.getPhysicalNumberOfCells();
+				if (cells > mostcells)
+					mostcells = cells;
+			}
+			COLUMN_SIZE = mostcells;
+			ROW_SIZE = rows;
+			// data = new String[mostcells][rows];
+			data = new String[COLUMN_SIZE][ROW_SIZE];
+
+			Log.d("des", "8");
+
+			// for (int r = 0; r < 50 && r < rows; r++) {
+			for (int r = 0; r < rows; r++) {
+				HSSFRow row = sheet.getRow(r);
+				if (row == null)
+					continue;
+				int cells = row.getPhysicalNumberOfCells();
+				Log.d("des", "14");
+
+				for (int c = 0; c < cells; c++) {
+					// for (int c = 0; c < 50 && c < cells; c++) {
+					HSSFCell cell = row.getCell(c);
+					String value = null;
+
+					switch (cell.getCellType()) {
+
+					case HSSFCell.CELL_TYPE_FORMULA:
+						value = cell.getCellFormula();
+						break;
+
+					case HSSFCell.CELL_TYPE_NUMERIC:
+						value = "" + cell.getNumericCellValue();
+						break;
+
+					case HSSFCell.CELL_TYPE_STRING:
+						// value = "STRING value=" + cell.getStringCellValue();
+						value = cell.getStringCellValue();
+						break;
+
+					default:
+					}
+					// Log.d("des","99");
+
+					// System.out.println("CELL col=" + cell.getColumnIndex() +
+					// " VALUE="
+					// + value);
+
+					data[cell.getColumnIndex()][r] = value;
+				}
+
+			}
+
+		} catch (Exception e) {
+			Log.d("error ", "" + e.getMessage());
+		}
+
 	}
 
 	void dataToScreen() {
 		int c = 0;
 		int r = 0;
 		for (int k = 0; k < cellValue.length; k++) {
-			if (c + columnsRight < DATA_SIZE && r + rowsDown < DATA_SIZE) {
+			if (c + columnsRight < COLUMN_SIZE && r + rowsDown < ROW_SIZE) {
+				// if (c + columnsRight < DATA_SIZE && r + rowsDown < DATA_SIZE)
+				// {
 				cellValue[k] = data[c + columnsRight][r + rowsDown];
 				// cellValue[k] = data[r+rowsDown][c+columnsRight];
 			}
