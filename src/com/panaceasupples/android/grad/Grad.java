@@ -23,7 +23,7 @@ public class Grad extends Activity {
 
 	private int bigpos;
 	private int rowsDown;
-	private int rowsRight;
+	private int columnsRight;
 
 	private int SCREEN_COLUMNS;
 	private int SCREEN_ROWS;
@@ -33,6 +33,7 @@ public class Grad extends Activity {
 
 	private final int AD_HEIGHT = 75;
 	private final int COLUMN_MARKER_HEIGHT = 25;
+	private int DATA_SIZE = 20;
 
 	private String[] cellValue;
 	private TextView rMarker[];
@@ -42,6 +43,9 @@ public class Grad extends Activity {
 	private static final int MEDIUM_DPI_STATUS_BAR_HEIGHT = 25;
 	private static final int HIGH_DPI_STATUS_BAR_HEIGHT = 38;
 
+	// int data[][];
+	String data[][];
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,12 @@ public class Grad extends Activity {
 	}
 
 	void doStuff() {
+
+		// data = new int[20][20];
+		data = new String[DATA_SIZE][DATA_SIZE];
+		// data[0][0] = 1;
+		data[0][0] = "1";
+		data[7][0] = "7";
 
 		DisplayMetrics dm = new DisplayMetrics();
 		((WindowManager) getSystemService(Context.WINDOW_SERVICE))
@@ -157,12 +167,12 @@ public class Grad extends Activity {
 				LayoutParams.FILL_PARENT));
 
 		rowsDown = 0;
-		rowsRight = 0;
+		columnsRight = 0;
 
 		for (int j = 0; j < SCREEN_ROWS; j++) {
 			rMarker[j] = new TextView(this);
 			rMarker[j].setText(Integer.toString(j + rowsDown + 1));
-			// rMarker[j].setText(Integer.toString(j+101));
+			// / rMarker[j].setText(Integer.toString(j+101));
 			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
 			rMarker[j].setGravity(Gravity.CENTER);
 			rll.addView(rMarker[j], rMarkerLayoutParams);
@@ -200,6 +210,8 @@ public class Grad extends Activity {
 					} else {
 						if (action == ac && rowsDown < 970) { // bottom downward
 							rowsDown++;
+							dataToScreen();
+							gridview.invalidateViews();
 							for (int j = 0; j < SCREEN_ROWS; j++) {
 								rMarker[j].setText(Integer.toString(j + 1
 										+ rowsDown));
@@ -219,6 +231,8 @@ public class Grad extends Activity {
 						if (rowsDown > 0) {
 							if (action == ac) {
 								rowsDown--;
+								dataToScreen();
+								gridview.invalidateViews();
 								for (int j = 0; j < SCREEN_ROWS; j++) {
 									rMarker[j].setText(Integer.toString(j + 1
 											+ rowsDown));
@@ -238,9 +252,12 @@ public class Grad extends Activity {
 						}
 					} else {
 						if (action == ac) {
-							rowsRight++;
+							columnsRight++;
+							dataToScreen();
+							gridview.invalidateViews();
 							for (int j = 0; j < SCREEN_COLUMNS; j++) {
-								cMarker[j].setText(numToColumn(j + rowsRight));
+								cMarker[j]
+										.setText(numToColumn(j + columnsRight));
 							}
 						}
 					}
@@ -255,12 +272,15 @@ public class Grad extends Activity {
 						}
 					} else {
 
-						if (rowsRight > 0) {
+						if (columnsRight > 0) {
 							if (action == ac) {
-								rowsRight--;
+								columnsRight--;
+								dataToScreen();
+								gridview.invalidateViews();
+								// deal with select as well
 								for (int j = 0; j < SCREEN_COLUMNS; j++) {
 									cMarker[j].setText(numToColumn(j
-											+ rowsRight));
+											+ columnsRight));
 								}
 							}
 						}
@@ -282,8 +302,7 @@ public class Grad extends Activity {
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
 		}
 
-		for (int k = 0; k < 16; k++)
-			cellValue[k] = Integer.toString(k + 1);
+		dataToScreen();
 
 		TextView menu = new TextView(this);
 		TextView rowMarker = new TextView(this);
@@ -315,6 +334,23 @@ public class Grad extends Activity {
 		select.setText(cellValue[firstPos]);
 
 		setContentView(ll);
+	}
+
+	void dataToScreen() {
+		int c = 0;
+		int r = 0;
+		for (int k = 0; k < cellValue.length; k++) {
+			if (c + columnsRight < DATA_SIZE && r + rowsDown < DATA_SIZE) {
+				cellValue[k] = data[c + columnsRight][r + rowsDown];
+				// cellValue[k] = data[r+rowsDown][c+columnsRight];
+			}
+			if ((k + 1) % SCREEN_COLUMNS == 0) {
+				c = 0;
+				r++;
+			} else
+				c++;
+		}
+
 	}
 
 	String numToColumn(int i) {
