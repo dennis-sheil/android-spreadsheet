@@ -55,9 +55,7 @@ public class Grad extends Activity {
 
 	void doStuff() {
 
-		// data = new int[20][20];
 		data = new String[DATA_SIZE][DATA_SIZE];
-		// data[0][0] = 1;
 		data[0][0] = "1";
 		data[7][0] = "7";
 
@@ -212,6 +210,7 @@ public class Grad extends Activity {
 							rowsDown++;
 							dataToScreen();
 							gridview.invalidateViews();
+							select.setText(cellValue[bigpos]);
 							for (int j = 0; j < SCREEN_ROWS; j++) {
 								rMarker[j].setText(Integer.toString(j + 1
 										+ rowsDown));
@@ -233,6 +232,7 @@ public class Grad extends Activity {
 								rowsDown--;
 								dataToScreen();
 								gridview.invalidateViews();
+								select.setText(cellValue[bigpos]);
 								for (int j = 0; j < SCREEN_ROWS; j++) {
 									rMarker[j].setText(Integer.toString(j + 1
 											+ rowsDown));
@@ -255,6 +255,8 @@ public class Grad extends Activity {
 							columnsRight++;
 							dataToScreen();
 							gridview.invalidateViews();
+							select.setText(cellValue[bigpos]);
+
 							for (int j = 0; j < SCREEN_COLUMNS; j++) {
 								cMarker[j]
 										.setText(numToColumn(j + columnsRight));
@@ -277,6 +279,8 @@ public class Grad extends Activity {
 								columnsRight--;
 								dataToScreen();
 								gridview.invalidateViews();
+								select.setText(cellValue[bigpos]);
+
 								// deal with select as well
 								for (int j = 0; j < SCREEN_COLUMNS; j++) {
 									cMarker[j].setText(numToColumn(j
