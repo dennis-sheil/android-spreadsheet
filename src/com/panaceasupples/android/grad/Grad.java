@@ -1,7 +1,8 @@
 package com.panaceasupples.android.grad;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.LinkedList;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -13,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,13 +22,20 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
 public class Grad extends Activity {
+
 	private GridView gridview;
 	private TextView select;
 
@@ -59,8 +68,10 @@ public class Grad extends Activity {
 	private HSSFWorkbook wb;
 	private HSSFSheet sheet;
 
-	// int data[][];
-	String data[][];
+	private String data[][];
+
+	private LinkedList<String> fileList = new LinkedList<String>();
+	private LinearLayout ll;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -125,9 +136,11 @@ public class Grad extends Activity {
 		tempHeight = tempHeight - (SCREEN_ROWS - 1);
 
 		CELL_HEIGHT = tempHeight / (SCREEN_ROWS + 2); // plus select and menu
+		Log.d("cell height is", CELL_HEIGHT + "");
 		tempHeight = tempHeight - (CELL_HEIGHT * (SCREEN_ROWS + 2));
 		int EXTRA_HEIGHT = tempHeight;
 		int SELECT_HEIGHT = CELL_HEIGHT + EXTRA_HEIGHT;
+		int MENU_HEIGHT = CELL_HEIGHT;
 
 		cellValue = new String[SCREEN_COLUMNS * SCREEN_ROWS];
 
@@ -144,7 +157,8 @@ public class Grad extends Activity {
 		cMarker = new TextView[SCREEN_COLUMNS];
 		rMarker = new TextView[SCREEN_ROWS];
 
-		LinearLayout ll = new LinearLayout(this);
+		// LinearLayout ll = new LinearLayout(this);
+		ll = new LinearLayout(this);
 		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
 		LinearLayout bottomll = new LinearLayout(this);
 		LinearLayout rll = new LinearLayout(this);
@@ -159,7 +173,7 @@ public class Grad extends Activity {
 				LinearLayout.LayoutParams.FILL_PARENT, SELECT_HEIGHT);
 
 		LinearLayout.LayoutParams menuLayoutParams = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT, CELL_HEIGHT);
+				LinearLayout.LayoutParams.FILL_PARENT, MENU_HEIGHT);
 
 		LinearLayout.LayoutParams columnMarkerLayoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, COLUMN_MARKER_HEIGHT);
@@ -201,9 +215,17 @@ public class Grad extends Activity {
 		gridview.setBackgroundResource(R.color.dgrey);
 		gridview.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int i, KeyEvent k) {
+
 				int action = k.getAction();
 				// action 0 - off position
 				// action 1 - on position
+				
+				// onKey catches back button, so make sure it functions
+				if (i == KeyEvent.KEYCODE_BACK && action == 0) {
+					moveTaskToBack(true);
+					return true;
+				}
+
 				int pos = gridview.getSelectedItemPosition();
 				if (pos < 0)
 					pos = bigpos;
@@ -324,12 +346,31 @@ public class Grad extends Activity {
 			columnMarkerLinearLayout.addView(cMarker[i], cmLayoutParams);
 		}
 
-		doExcelStuff();
-		dataToScreen();
+		ImageView fileImage = new ImageView(this);
 
-		TextView menu = new TextView(this);
+		int topPadding = 0;
+		if (MENU_HEIGHT < 22) {
+			fileImage.setImageResource(R.drawable.file16);
+			if (MENU_HEIGHT > 16) {
+				int temp = MENU_HEIGHT - 16;
+				topPadding = temp / 2;
+			}
+			fileImage.setPadding(10, topPadding, 0, 0);
+		} else if (MENU_HEIGHT >= 22) {
+			fileImage.setImageResource(R.drawable.file22);
+			int temp = MENU_HEIGHT - 22;
+			topPadding = temp / 2;
+
+			fileImage.setPadding(10, topPadding, 0, 0);
+		}
+
+		LinearLayout menu = new LinearLayout(this);
+
+		// TextView menu = new TextView(this);
 		TextView rowMarker = new TextView(this);
 		select = new TextView(this);
+		menu.addView(fileImage);
+		setIconListener(fileImage, "open");
 
 		menu.setBackgroundResource(R.color.ltblue);
 		rowMarker.setBackgroundResource(R.color.thgrey);
@@ -353,14 +394,98 @@ public class Grad extends Activity {
 		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
 		ll.addView(bottomll);
 
+		setContentView(ll);
+
+		// doExcelStuff();
+		// dataToScreen();
+
 		int firstPos = gridview.getSelectedItemPosition();
 		// Log.d("firstpos is", firstPos + "");
 		if (firstPos > 0)
 			select.setText(cellValue[firstPos]);
 		// ^^ kludgey, unneeded
 
-		setContentView(ll);
+		// setContentView(ll);
 
+	}
+
+	void setIconListener(final ImageView i, final String s) {
+		i.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				File file = Environment.getExternalStorageDirectory();
+				visitAllFiles(file);
+				String al[] = new String[fileList.size()];
+				for (int i = 0; fileList.size() > 0; i++) {
+					al[i] = (String) fileList.remove();
+				}
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+						Grad.this, android.R.layout.simple_list_item_1, al);
+
+				ListView lv = new ListView(Grad.this);
+
+				lv.setBackgroundColor(0xffcccccc); // light gray
+				lv.setAdapter(adapter);
+
+				TextView rv = new TextView(Grad.this);
+				TextView sv = new TextView(Grad.this);
+				if (al.length > 0) {
+					rv
+							.setText("We have found some Excel files.\nThey can take some time to load, especially larger ones.\n");
+					sv.setText("Select the spreadsheet you want to use:");
+					sv.setPadding(0, 0, 0, 50);
+				} else {
+					rv.setText("We did not find any Access (accdb, mdb) files"
+							+ " on your SD drive.\n");
+				}
+				LinearLayout mll;
+				mll = new LinearLayout(Grad.this);
+				mll.setOrientation(LinearLayout.VERTICAL);
+				mll.setGravity(Gravity.CENTER_HORIZONTAL);
+
+				mll.addView(rv);
+				mll.addView(sv);
+				mll.addView(lv);
+
+				setContentView(mll);
+
+				lv.setOnItemClickListener(new OnItemClickListener() {
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						CharSequence selectionCS = ((TextView) view).getText();
+						String selection = selectionCS.toString();
+
+						// Toast.makeText(Grad.this, selection,
+						// Toast.LENGTH_SHORT).show();
+
+						doExcelStuff(selection);
+						dataToScreen();
+						gridview.invalidateViews();
+						setContentView(ll);
+
+					}
+				});
+
+				// Toast.makeText(Grad.this, s, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+
+	void visitAllFiles(File dir) {
+		if (dir.isDirectory()) {
+			String[] children = dir.list();
+			if (dir.canRead()) {
+				for (int i = 0; i < children.length; i++) {
+					visitAllFiles(new File(dir, children[i]));
+				}
+			}
+		} else {
+			String ap = dir.getAbsolutePath();
+			// if (ap.endsWith(".mdb") || ap.endsWith(".accdb")) {
+			if (ap.endsWith(".xls")) {
+				fileList.add(ap);
+			}
+		}
 	}
 
 	void pullSomeRows() {
@@ -408,31 +533,34 @@ public class Grad extends Activity {
 
 	}
 
-	void doExcelStuff() {
-		String fileName = "/sdcard/docket.xls";
+	void doExcelStuff(String fileName) {
+		// void doExcelStuff() {
+		// String fileName = "/sdcard/docket.xls";
+		// String fileName = "/sdcard/cd.xls";
+		// String fileName = "/sdcard/fedex.xls";
 		// HSSFWorkbook wb = HSSFReadWrite.readFile(fileName);
 		// Log.d("des", "1");
 
 		try {
 			// Log.d("des", "1.25 ");
+			File file = new File(fileName);
+			long filelength = file.length();
+			Log.d("File size is", filelength + "");
 
 			// FileInputStream fis = new FileInputStream(fileName);
 			fis = new FileInputStream(fileName);
-			Log.d("des", "1.5 ");
+			Log.d("grad", "before hssfworkbook constructor ");
 
 			// HSSFWorkbook wb = new HSSFWorkbook(fis); // this takes a while 20
 			// seconds
 			wb = new HSSFWorkbook(fis); // <-- this takes a while 20 seconds
-			Log.d("des", "2 ");
+			Log.d("grad", "after hssfworkbook constructor");
 
 			sheet = wb.getSheetAt(0); // 0 means get first sheet
-			// Log.d("des", "3");
 
 			int rows = sheet.getPhysicalNumberOfRows();
-			// Log.d("des", "4");
 
 			int mostcells = 0;
-			// Log.d("des", "5");
 
 			for (int r = 0; r < rows; r++) {
 				HSSFRow row = sheet.getRow(r);
@@ -447,7 +575,8 @@ public class Grad extends Activity {
 			// data = new String[mostcells][rows];
 			data = new String[COLUMN_SIZE][ROW_SIZE];
 
-			// Log.d("des", "8");
+			// Log.d("COLUMN_SIZE", COLUMN_SIZE + "");
+			// Log.d("ROW_SIZE", ROW_SIZE + "");
 
 			for (int r = 0; r < SCREEN_ROWS + 3; r++) {
 				// for (int r = 0; r < rows; r++) {
