@@ -1,15 +1,17 @@
 <resources>
-	<color name="dwhite">#ddffffff</color>
-	<color name="cwhite">#ccffffff</color>
-	<color name="white">#ffffffff</color>
-	<color name="black">#ff000000</color>
-	<color name="green">#ff00ff00</color>
-	<color name="red">#ffff0000</color>
-	<color name="blue">#ff0000ff</color>
-	<color name="ltblue">#ffccccff</color>
-	<color name="grey">#ffbebebe</color>
-	<color name="dgrey">#ddbebebe</color>
-	<color name="cgrey">#ccbebebe</color>
-	<color name="thgrey">#ffd3d3d3</color>
-	<color name="morange">#55ff9900</color>
+
+    <color name="dwhite">#ddffffff</color>
+    <color name="cwhite">#ccffffff</color>
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="green">#ff00ff00</color>
+    <color name="red">#ffff0000</color>
+    <color name="blue">#ff0000ff</color>
+    <color name="ltblue">#ffccccff</color>
+    <color name="grey">#ffbebebe</color>
+    <color name="dgrey">#ddbebebe</color>
+    <color name="cgrey">#ccbebebe</color>
+    <color name="thgrey">#ffd3d3d3</color>
+    <color name="morange">#55ff9900</color>
+
 </resources>

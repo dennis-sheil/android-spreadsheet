@@ -1,0 +1,24 @@
+Copyright 2011 Dennis Sheil
+
+Android Spreadsheet
+
+Released to Github, 2011 October 30
+
+Information on this is at Github
+
+You can send me patches - dsheil@vartmp.com
+
+I have been delaying releasing this, and just decided to pull the 
+trigger.  The most important feature not included is touch scrolling.  
+It does scroll by arrow key (if your Android device has one).  So touch 
+scrolling is the next feature to go in.
+
+The big thing for this is Excel 2007 and 2010 format, which this does 
+not have.  Even stripped down POI jar's can't go in - they exceed the 
+Android Dalvik 65536 method limit.  POI can be done on Android, but it 
+is a bit of a job, which is why I am putting this on Github.  And also 
+to let people use code I've sort of abandoned.
+
+Other features to do are obvious - the selected cell displayed in the 
+upper left hand corner, editable cells, the ability to save a file, 
+adjustable column width etc.
