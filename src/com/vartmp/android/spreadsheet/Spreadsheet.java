@@ -11,6 +11,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -89,10 +91,12 @@ public class Spreadsheet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		doStuff();
+	//	doStuff();
 	}
 
-	void doStuff() {
+	//void doStuff() {
+	public void onStart() {
+		super.onStart();
 
 		DisplayMetrics dm = new DisplayMetrics();
 		((WindowManager) getSystemService(Context.WINDOW_SERVICE))
@@ -169,8 +173,12 @@ public class Spreadsheet extends Activity {
 		cMarker = new TextView[SCREEN_COLUMNS];
 		rMarker = new TextView[SCREEN_ROWS];
 
-		// LinearLayout ll = new LinearLayout(this);
-		ll = new LinearLayout(this);
+		setContentView(R.layout.spreadsheet);
+
+		
+		ll = (LinearLayout) findViewById(R.id.ssll);
+
+
 		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
 		LinearLayout bottomll = new LinearLayout(this);
 		LinearLayout rll = new LinearLayout(this);
@@ -214,7 +222,11 @@ public class Spreadsheet extends Activity {
 			rll.addView(rMarker[j], rMarkerLayoutParams);
 		}
 
-		gridview = new GridView(this);
+				ll = (LinearLayout) findViewById(R.id.ssll);
+		//gridview = (GridView) findViewById(R.id.gv);
+				gridview = new GridView(this);
+
+				
 		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 		gridview.setColumnWidth(CELL_WIDTH);
@@ -405,7 +417,7 @@ public class Spreadsheet extends Activity {
 		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
 		ll.addView(bottomll);
 
-		setContentView(ll);
+		//setContentView(ll);
 
 		// doExcelStuff();
 		// dataToScreen();
@@ -567,13 +579,16 @@ public class Spreadsheet extends Activity {
 				wb = new HSSFWorkbook(fis); // <-- this takes a while 20 seconds
 				Log.d("grad", "hssf");
 
-			} else {
-				// wb = new XSSFWorkbook(fis); // <-- this takes a while 20
+			} 
+			// xssf disabled at the moment
+			/* 
+			else {
+				 wb = new XSSFWorkbook(fis); // <-- this takes a while 20
 				// seconds
 				// ^^ uncomment to allow xssf
 				Log.d("grad", "xssf");
 			}
-
+*/
 			Log.d("grad", "after workbook constructor");
 
 			sheet = wb.getSheetAt(0); // 0 means get first sheet
