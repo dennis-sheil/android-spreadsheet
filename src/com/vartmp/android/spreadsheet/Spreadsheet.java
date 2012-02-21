@@ -91,10 +91,8 @@ public class Spreadsheet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	//	doStuff();
 	}
 
-	//void doStuff() {
 	public void onStart() {
 		super.onStart();
 
@@ -168,19 +166,18 @@ public class Spreadsheet extends Activity {
 		ROW_MARKER_WIDTH = ROW_MARKER_WIDTH + tempWidth;
 
 		TextView empty = new TextView(this);
-		TextView emptyTwo = new TextView(this);
-		// TextView cMarker[] = new TextView[SCREEN_COLUMNS];
+
 		cMarker = new TextView[SCREEN_COLUMNS];
 		rMarker = new TextView[SCREEN_ROWS];
 
 		setContentView(R.layout.spreadsheet);
 
-		
 		ll = (LinearLayout) findViewById(R.id.ssll);
+		TextView emptyTwo = (TextView) findViewById(R.id.ettv);
 
+		LinearLayout columnMarkerLinearLayout = (LinearLayout) findViewById(R.id.cmll);
+		LinearLayout bottomll = (LinearLayout) findViewById(R.id.bll);
 
-		LinearLayout columnMarkerLinearLayout = new LinearLayout(this);
-		LinearLayout bottomll = new LinearLayout(this);
 		LinearLayout rll = new LinearLayout(this);
 
 		LinearLayout.LayoutParams cmLayoutParams = new LinearLayout.LayoutParams(
@@ -216,17 +213,17 @@ public class Spreadsheet extends Activity {
 		for (int j = 0; j < SCREEN_ROWS; j++) {
 			rMarker[j] = new TextView(this);
 			rMarker[j].setText(Integer.toString(j + rowsDown + 1));
-			// / rMarker[j].setText(Integer.toString(j+101));
 			rMarker[j].setTextColor(Color.rgb(0, 0, 0)); // turns it black
 			rMarker[j].setGravity(Gravity.CENTER);
 			rll.addView(rMarker[j], rMarkerLayoutParams);
 		}
 
-				ll = (LinearLayout) findViewById(R.id.ssll);
-		//gridview = (GridView) findViewById(R.id.gv);
-				gridview = new GridView(this);
+		ll = (LinearLayout) findViewById(R.id.ssll);
+		select = (TextView) findViewById(R.id.selecttv);
 
-				
+		// gridview = (GridView) findViewById(R.id.gv);
+		gridview = new GridView(this);
+
 		gridview.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 		gridview.setColumnWidth(CELL_WIDTH);
@@ -387,11 +384,11 @@ public class Spreadsheet extends Activity {
 			fileImage.setPadding(10, topPadding, 0, 0);
 		}
 
-		LinearLayout menu = new LinearLayout(this);
+		LinearLayout menu = (LinearLayout) findViewById(R.id.llmenu);
 
-		// TextView menu = new TextView(this);
 		TextView rowMarker = new TextView(this);
-		select = new TextView(this);
+		select = (TextView) findViewById(R.id.selecttv);
+
 		menu.addView(fileImage);
 		setIconListener(fileImage, "open");
 
@@ -406,18 +403,17 @@ public class Spreadsheet extends Activity {
 		select.setTextColor(Color.rgb(0, 0, 0));
 
 		rll.setOrientation(LinearLayout.VERTICAL);
-		ll.setOrientation(LinearLayout.VERTICAL);
+		// ll.setOrientation(LinearLayout.VERTICAL);
 
 		bottomll.addView(rll, rowMarkerLayoutParams);
 		bottomll.addView(gridview);
 
-		ll.addView(emptyTwo, layoutParams);
-		ll.addView(menu, menuLayoutParams);
-		ll.addView(select, selectLayoutParams);
-		ll.addView(columnMarkerLinearLayout, columnMarkerLayoutParams);
-		ll.addView(bottomll);
+		columnMarkerLinearLayout.setLayoutParams(columnMarkerLayoutParams);
+		menu.setLayoutParams(menuLayoutParams);
 
-		//setContentView(ll);
+		emptyTwo.setLayoutParams(layoutParams);
+		select.setLayoutParams(selectLayoutParams);
+
 
 		// doExcelStuff();
 		// dataToScreen();
@@ -428,7 +424,6 @@ public class Spreadsheet extends Activity {
 			select.setText(cellValue[firstPos]);
 		// ^^ kludgey, unneeded
 
-		// setContentView(ll);
 
 	}
 
@@ -579,16 +574,12 @@ public class Spreadsheet extends Activity {
 				wb = new HSSFWorkbook(fis); // <-- this takes a while 20 seconds
 				Log.d("grad", "hssf");
 
-			} 
-			// xssf disabled at the moment
-			/* 
-			else {
-				 wb = new XSSFWorkbook(fis); // <-- this takes a while 20
-				// seconds
-				// ^^ uncomment to allow xssf
-				Log.d("grad", "xssf");
 			}
-*/
+			// xssf disabled at the moment
+			/*
+			 * else { wb = new XSSFWorkbook(fis); // <-- this takes a while 20
+			 * // seconds // ^^ uncomment to allow xssf Log.d("grad", "xssf"); }
+			 */
 			Log.d("grad", "after workbook constructor");
 
 			sheet = wb.getSheetAt(0); // 0 means get first sheet
