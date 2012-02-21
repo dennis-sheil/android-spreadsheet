@@ -255,101 +255,19 @@ public class Spreadsheet extends Activity {
 				int ac = 0; // off (1 is on)
 
 				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
-					if (pos < cellValue.length - SCREEN_COLUMNS) {
-						if (action == ac) {
-							bigpos = pos + SCREEN_COLUMNS;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-					} else {
-						if (action == ac && rowsDown < 970) { // bottom downward
-							rowsDown++;
-							Log.d(rowsDown + " " + SCREEN_ROWS, rowsPulled + "");
-							if (rowsDown + SCREEN_ROWS >= rowsPulled)
-								pullSomeRows();
-
-							dataToScreen();
-							gridview.invalidateViews();
-							select.setText(cellValue[bigpos]);
-							for (int j = 0; j < SCREEN_ROWS; j++) {
-								rMarker[j].setText(Integer.toString(j + 1
-										+ rowsDown));
-							}
-						}
-					}
+					moveDown(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					if (pos >= SCREEN_COLUMNS) {
-						if (action == ac) {
-							bigpos = pos - SCREEN_COLUMNS;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-					} else {
-						if (rowsDown > 0) {
-							if (action == ac) {
-								rowsDown--;
-								dataToScreen();
-								gridview.invalidateViews();
-								select.setText(cellValue[bigpos]);
-								for (int j = 0; j < SCREEN_ROWS; j++) {
-									rMarker[j].setText(Integer.toString(j + 1
-											+ rowsDown));
-								}
-							}
-						}
-					}
-
+					moveUp(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0) {
-						if (action == ac) {
-							bigpos = pos + 1;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-					} else {
-						if (action == ac) {
-							columnsRight++;
-							dataToScreen();
-							gridview.invalidateViews();
-							select.setText(cellValue[bigpos]);
-
-							for (int j = 0; j < SCREEN_COLUMNS; j++) {
-								cMarker[j]
-										.setText(numToColumn(j + columnsRight));
-							}
-						}
-					}
+					moveRight(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
-					if ((pos) % SCREEN_COLUMNS != 0) {
-						if (action == ac) {
-							bigpos = pos - 1;
-							gridview.setSelection(bigpos);
-							select.setText(cellValue[bigpos]);
-						}
-					} else {
-
-						if (columnsRight > 0) {
-							if (action == ac) {
-								columnsRight--;
-								dataToScreen();
-								gridview.invalidateViews();
-								select.setText(cellValue[bigpos]);
-
-								// deal with select as well
-								for (int j = 0; j < SCREEN_COLUMNS; j++) {
-									cMarker[j].setText(numToColumn(j
-											+ columnsRight));
-								}
-							}
-						}
-
-					}
+					moveLeft(pos, action, ac);
 				}
 
 				return true;
@@ -414,7 +332,6 @@ public class Spreadsheet extends Activity {
 		emptyTwo.setLayoutParams(layoutParams);
 		select.setLayoutParams(selectLayoutParams);
 
-
 		// doExcelStuff();
 		// dataToScreen();
 
@@ -424,7 +341,104 @@ public class Spreadsheet extends Activity {
 			select.setText(cellValue[firstPos]);
 		// ^^ kludgey, unneeded
 
+	}
 
+	void moveLeft(int pos, int action, int ac) {
+
+		if ((pos) % SCREEN_COLUMNS != 0) {
+			if (action == ac) {
+				bigpos = pos - 1;
+				gridview.setSelection(bigpos);
+				select.setText(cellValue[bigpos]);
+			}
+		} else {
+
+			if (columnsRight > 0) {
+				if (action == ac) {
+					columnsRight--;
+					dataToScreen();
+					gridview.invalidateViews();
+					select.setText(cellValue[bigpos]);
+
+					// deal with select as well
+					for (int j = 0; j < SCREEN_COLUMNS; j++) {
+						cMarker[j].setText(numToColumn(j + columnsRight));
+					}
+				}
+			}
+
+		}
+	}
+
+	void moveRight(int pos, int action, int ac) {
+
+		if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0) {
+			if (action == ac) {
+				bigpos = pos + 1;
+				gridview.setSelection(bigpos);
+				select.setText(cellValue[bigpos]);
+			}
+		} else {
+			if (action == ac) {
+				columnsRight++;
+				dataToScreen();
+				gridview.invalidateViews();
+				select.setText(cellValue[bigpos]);
+
+				for (int j = 0; j < SCREEN_COLUMNS; j++) {
+					cMarker[j].setText(numToColumn(j + columnsRight));
+				}
+			}
+		}
+	}
+
+	void moveDown(int pos, int action, int ac) {
+		if (pos < cellValue.length - SCREEN_COLUMNS) {
+			if (action == ac) {
+				bigpos = pos + SCREEN_COLUMNS;
+				gridview.setSelection(bigpos);
+				select.setText(cellValue[bigpos]);
+			}
+		} else {
+			if (action == ac && rowsDown < 970) { // bottom downward
+				rowsDown++;
+				Log.d(rowsDown + " " + SCREEN_ROWS, rowsPulled + "");
+				if (rowsDown + SCREEN_ROWS >= rowsPulled)
+					pullSomeRows();
+
+				dataToScreen();
+				gridview.invalidateViews();
+				select.setText(cellValue[bigpos]);
+				for (int j = 0; j < SCREEN_ROWS; j++) {
+					rMarker[j].setText(Integer.toString(j + 1 + rowsDown));
+				}
+			}
+		}
+
+	}
+
+	void moveUp(int pos, int action, int ac) {
+
+		if (pos >= SCREEN_COLUMNS) {
+
+			if (action == ac) {
+				bigpos = pos - SCREEN_COLUMNS;
+				gridview.setSelection(bigpos);
+				select.setText(cellValue[bigpos]);
+			}
+		} else {
+			if (rowsDown > 0) {
+				if (action == ac) {
+					rowsDown--;
+					dataToScreen();
+					gridview.invalidateViews();
+					select.setText(cellValue[bigpos]);
+					for (int j = 0; j < SCREEN_ROWS; j++) {
+						rMarker[j].setText(Integer.toString(j + 1 + rowsDown));
+					}
+				}
+			}
+		}
 	}
 
 	void setIconListener(final ImageView i, final String s) {
