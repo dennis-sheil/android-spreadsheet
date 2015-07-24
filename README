@@ -1,46 +1,43 @@
-Copyright 2011 Dennis Sheil
-
 Android Spreadsheet
 
-Released to Github, 2011 October 30
-Under Apache License, Version 2.0
+Copyright 2011-2015 Dennis Sheil
 
-This is an Android targeted project.  It is a spreadsheet that can read 
-Microsoft Excel spreadsheets in the pre-2007 format (.xls).  It 
-implements the POI HSSF library.
+Released under Apache License, Version 2.0
 
-It is missing a number of standard spreadsheet features, but that is 
-because I was mostly working on implementing one feature in particular - 
-the ability to read Microsoft Excel 2007 and 2010 format spreadsheets.  
-Android Dalvik executables have a 65,536 method limit, and with all the 
-XSSF required libraries included, this program would exceed that limit.  
-Thus, it only does HSSF (.xls, pre-2007 format) for now.  One of my 
-goals is to get 2007 and 2010 format implemented.  I would want some 
-help when tackling that.  The other spreadsheet features I will add if 
-requested, but the one big feature of handling 2007 and 2010 format 
-Microsoft Excel features I'd need the help of some POI and/or Android 
-developers operating at an intermediate or advanced level.  With that 
-help, I'd be willing to throw in half (or three quarters) the effort on 
-that feature.  On other features, I'll implement whatever people want, 
-as time allows.
+In 2011 I began writing this spreadsheet app for Android.  With the use 
+of the Apache POI libraries, I was able to load Microsoft Excel files in 
+their pre-2007 (.xls) format.  That done, I guessed that loading 2007- 
+style Excel files (.xlsx) would be easy, so I launched into designing 
+the user interface.  At some point I went back to implement the 
+functionality for 2007 on Excel files and discovered that, for a variety 
+of reasons, including Android's famous 65,536 Dalvik executable method 
+limit (which was an obscure problem at the time), loading XLSX files 
+would be very difficult for the foreseeable future.  So I put this 
+project aside in June 2011, and released it on Github in October 2011.
 
-Speaking of included libraries - I suggest visiting this page ( 
-http://poi.apache.org/overview.html ) to see which referenced libraries 
-you must include with this Android project, particularly the component 
-map section.  As this currently only does HSSF, you just need the poi 
-jars, which are poi itself ( poi-version-yyyymmdd.jar , with yyyymmdd 
-being the date of the poi in question) as well as Apache commons-logging 
-and log4j jar's.  You need those jar's as Android references libraries 
-for this to be able to load pre-2007 XLS files.  That page also shows 
-you what is needed for XSSF, Excel 2007 and 2010 files.  I actually 
-stripped down the schemas file even more than it is already, but it 
-still bypassed the 65536 method Dalvik executable method.  Even if it 
-can't be whittled down to less than 65536 methods, putting this in an 
-Android project is still doable, you just have to put two Dalvik 
-executables in one project.  Some help in this is what I'm looking for.  
-A lot of features this is missing I can do easily, I've just been 
-wrapped up in trying to get those POI XSSF libraries in, so that this 
-can do the latest Microsoft Excel files.
+By February 2012 I had learned Android's XML layout format a little 
+better, so I updated the app to fix that, as well as doing a little bit 
+of refactoring.
 
-You can send me patches, comments etc. - dsheil@vartmp.com
+You can tell how old this app is by the fact that it was watching for 
+arrow keys, not fling gestures.  It is now July 2015, and I have updated 
+the app so that you can browse the spreadsheet with fling gestures.
 
+The lack of that particular "feature" irritated me, so I added it.  
+Looking at this app, I see there are many things which have broken in 
+newer versions of Android, such as file loading, and there are many 
+features it needs.  I will fix things as my schedule allows.
+
+I suggest visiting this page ( http://poi.apache.org/overview.html ) to 
+see which referenced libraries you must include with this Android 
+project, particularly the component map section.  As this currently only 
+does HSSF, you just need the poi jars, which are poi itself ( 
+poi-version-yyyymmdd.jar , with yyyymmdd being the date of the poi in 
+question) as well as Apache commons-logging and log4j jar's.  You need 
+those jar's as Android references libraries for this to be able to load 
+pre-2007 XLS files.  
+
+Patches doing things like OpenOffice/LibreOffice spreadsheets are 
+welcome.  Feel free to contact me if you're considering doing that.
+
+You can send me comments etc. - dsheil@vartmp.com

@@ -23,9 +23,11 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.GestureDetector;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -234,7 +236,19 @@ public class Spreadsheet extends Activity {
 		gridview.setNumColumns(-1);
 		gridview.setAdapter(new TextAdapter(this));
 		gridview.setBackgroundResource(R.color.dgrey);
+		gridview.setBackgroundResource(R.color.dgrey);
+		gridview.setClickable(true); 
+		gridview.setFocusable(true);
 
+		final GestureDetector mDetector = new GestureDetector(this, new MyGestureListener());
+
+		gridview.setOnTouchListener(new View.OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent me) {
+				return mDetector.onTouchEvent(me);
+			}
+                });
+		
+                /*
 		gridview.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int i, KeyEvent k) {
 
@@ -255,25 +269,25 @@ public class Spreadsheet extends Activity {
 				int ac = 0; // off (1 is on)
 
 				if (i == KeyEvent.KEYCODE_DPAD_DOWN) {
-					moveDown(pos, action, ac);
+					//moveDown(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_UP) {
-					moveUp(pos, action, ac);
+					//moveUp(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_RIGHT) {
-					moveRight(pos, action, ac);
+					//moveRight(pos, action, ac);
 				}
 
 				else if (i == KeyEvent.KEYCODE_DPAD_LEFT) {
-					moveLeft(pos, action, ac);
+					//moveLeft(pos, action, ac);
 				}
 
 				return true;
 			}
 		});
-
+                */
 		columnMarkerLinearLayout.addView(empty, midMarkerParams);
 
 		for (int i = 0; i < SCREEN_COLUMNS; i++) {
@@ -343,18 +357,21 @@ public class Spreadsheet extends Activity {
 
 	}
 
-	void moveLeft(int pos, int action, int ac) {
+    void selectCoord(MotionEvent event) {
+        float ex = event.getX();
+        float ey = event.getY();
+        int pos = gridview.pointToPosition((int) ex, (int) ey);
+        if (pos >= 0) {
+            select.setText(cellValue[pos]);
+        }
+    }
 
-		if ((pos) % SCREEN_COLUMNS != 0) {
-			if (action == ac) {
-				bigpos = pos - 1;
-				gridview.setSelection(bigpos);
-				select.setText(cellValue[bigpos]);
-			}
-		} else {
+
+	//void moveLeft(int pos, int action, int ac) {
+	void moveLeft() {
+
 
 			if (columnsRight > 0) {
-				if (action == ac) {
 					columnsRight--;
 					dataToScreen();
 					gridview.invalidateViews();
@@ -364,79 +381,50 @@ public class Spreadsheet extends Activity {
 					for (int j = 0; j < SCREEN_COLUMNS; j++) {
 						cMarker[j].setText(numToColumn(j + columnsRight));
 					}
-				}
 			}
 
-		}
 	}
 
-	void moveRight(int pos, int action, int ac) {
+	//void moveRight(int pos, int action, int ac) {
+	void moveRight() {
 
-		if ((pos + 1) % SCREEN_COLUMNS != 0 || pos == 0) {
-			if (action == ac) {
-				bigpos = pos + 1;
-				gridview.setSelection(bigpos);
-				select.setText(cellValue[bigpos]);
-			}
-		} else {
-			if (action == ac) {
 				columnsRight++;
 				dataToScreen();
 				gridview.invalidateViews();
-				select.setText(cellValue[bigpos]);
+				//select.setText(cellValue[bigpos]);
 
 				for (int j = 0; j < SCREEN_COLUMNS; j++) {
 					cMarker[j].setText(numToColumn(j + columnsRight));
 				}
-			}
-		}
 	}
 
-	void moveDown(int pos, int action, int ac) {
-		if (pos < cellValue.length - SCREEN_COLUMNS) {
-			if (action == ac) {
-				bigpos = pos + SCREEN_COLUMNS;
-				gridview.setSelection(bigpos);
-				select.setText(cellValue[bigpos]);
-			}
-		} else {
-			if (action == ac && rowsDown < 970) { // bottom downward
+	//void moveDown(int pos, int action, int ac) {
+	void moveDown() {
+			if (rowsDown < 970) { // bottom downward  - magic number
 				rowsDown++;
 				Log.d(rowsDown + " " + SCREEN_ROWS, rowsPulled + "");
 				if (rowsDown + SCREEN_ROWS >= rowsPulled)
 					pullSomeRows();
 
 				dataToScreen();
-				gridview.invalidateViews();
-				select.setText(cellValue[bigpos]);
+				//select.setText(cellValue[bigpos]);
 				for (int j = 0; j < SCREEN_ROWS; j++) {
 					rMarker[j].setText(Integer.toString(j + 1 + rowsDown));
 				}
 			}
-		}
 
 	}
 
-	void moveUp(int pos, int action, int ac) {
+	//void moveUp(int pos, int action, int ac) {
+	void moveUp() {
 
-		if (pos >= SCREEN_COLUMNS) {
-
-			if (action == ac) {
-				bigpos = pos - SCREEN_COLUMNS;
-				gridview.setSelection(bigpos);
-				select.setText(cellValue[bigpos]);
-			}
-		} else {
-			if (rowsDown > 0) {
-				if (action == ac) {
-					rowsDown--;
-					dataToScreen();
-					gridview.invalidateViews();
-					select.setText(cellValue[bigpos]);
-					for (int j = 0; j < SCREEN_ROWS; j++) {
-						rMarker[j].setText(Integer.toString(j + 1 + rowsDown));
-					}
-				}
+		if (rowsDown > 0) {
+			rowsDown--;
+			dataToScreen();
+			gridview.invalidateViews();
+			//select.setText(cellValue[bigpos]);
+			for (int j = 0; j < SCREEN_ROWS; j++) {
+				rMarker[j].setText(Integer.toString(j + 1 + rowsDown));
 			}
 		}
 	}
@@ -526,6 +514,8 @@ public class Spreadsheet extends Activity {
 		for (int r = rowsPulled; r < rp + 5; r++) {
 
 			// HSSFRow row = sheet.getRow(r);
+			if (sheet == null)
+				break;
 			Row row = sheet.getRow(r);
 			if (row == null)
 				continue;
@@ -776,6 +766,88 @@ public class Spreadsheet extends Activity {
 		return t;
 	}
 
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+            if (event1 != null && event2 != null) {
+
+                float e1x = event1.getX();
+                float e1y = event1.getY();
+                float e2x = event2.getX();
+                float e2y = event2.getY();
+
+                float ydiff = Math.abs(e1y-e2y);
+                float xdiff = Math.abs(e1x-e2x);
+
+                if (xdiff > ydiff) {
+                    if (e1x-e2x > 0) {
+                        moveRight();
+                    }
+                    else {
+                        moveLeft();
+                    }
+                }
+                else {
+                    if (e1y-e2y > 0) {
+                        moveDown();
+
+                    } else {
+                        moveUp();
+                    }
+
+                }
+
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                                float distanceY) {
+            return true;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent event) {
+            selectCoord(event);
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            selectCoord(event); 
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+            return true;
+        }
+
+    }
+
 	public class TextAdapter extends BaseAdapter {
 
 		private Context context;
@@ -813,7 +885,7 @@ public class Spreadsheet extends Activity {
 
 			tv.setText(cellValue[position]);
 			final int pos = position;
-
+                        /*
 			tv.setOnClickListener(new View.OnClickListener() {
 
 				@Override
@@ -824,7 +896,7 @@ public class Spreadsheet extends Activity {
 				}
 
 			});
-
+                        */
 			return tv;
 		}
 
