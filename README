@@ -1,43 +1,34 @@
 Android Spreadsheet
 
-Copyright 2011-2015 Dennis Sheil
+Copyright 2013-2019 Unwrapped Inc.
 
-Released under Apache License, Version 2.0
+Released under the GPLv2 License (see COPYING).
 
-In 2011 I began writing this spreadsheet app for Android.  With the use 
-of the Apache POI libraries, I was able to load Microsoft Excel files in 
-their pre-2007 (.xls) format.  That done, I guessed that loading 2007- 
-style Excel files (.xlsx) would be easy, so I launched into designing 
-the user interface.  At some point I went back to implement the 
-functionality for 2007 on Excel files and discovered that, for a variety 
-of reasons, including Android's famous 65,536 Dalvik executable method 
-limit (which was an obscure problem at the time), loading XLSX files 
-would be very difficult for the foreseeable future.  So I put this 
-project aside in June 2011, and released it on Github in October 2011.
+This is a spreadsheet for Android.  I began working on it in 2011, and 
+have worked on it on and off since then.
 
-By February 2012 I had learned Android's XML layout format a little 
-better, so I updated the app to fix that, as well as doing a little bit 
-of refactoring.
+Currently it can load CSV spreadsheets, XLS spreadsheets and XLSX 
+spreadsheets.  I will push up functionality I already have written where 
+it load ODS spreadsheets as well.
 
-You can tell how old this app is by the fact that it was watching for 
-arrow keys, not fling gestures.  It is now July 2015, and I have updated 
-the app so that you can browse the spreadsheet with fling gestures.
+I have more functionality written that has not been pushed up yet.  This 
+includes being able to jump to a particular cell and being able to 
+search through cells.  I also have functionality to push up which loads 
+all sheets of a spreadsheet, which use multiple tabs on-screen.  The app 
+can handle rows and columns of different sizes.
 
-The lack of that particular "feature" irritated me, so I added it.  
-Looking at this app, I see there are many things which have broken in 
-newer versions of Android, such as file loading, and there are many 
-features it needs.  I will fix things as my schedule allows.
+I also have functionality to save files, although I will work on that 
+more before pushing it up.
 
-I suggest visiting this page ( http://poi.apache.org/overview.html ) to 
-see which referenced libraries you must include with this Android 
-project, particularly the component map section.  As this currently only 
-does HSSF, you just need the poi jars, which are poi itself ( 
-poi-version-yyyymmdd.jar , with yyyymmdd being the date of the poi in 
-question) as well as Apache commons-logging and log4j jar's.  You need 
-those jar's as Android references libraries for this to be able to load 
-pre-2007 XLS files.  
+There are a lot of little things that need to be done, some of which are 
+already done and just need to be pushed up.  I wanted to get the code 
+out there though.
 
-Patches doing things like OpenOffice/LibreOffice spreadsheets are 
-welcome.  Feel free to contact me if you're considering doing that.
+If you send a pull request or patch, have the license for the patch be 
+Apache License, Version 2.0.  Include the full license boilerplate as a 
+comment at the beginning of the pull request.  You can get that at 
+https://www.apache.org/licenses/LICENSE-2.0 (If you want, you can 
+dual-license your patch as Apache v2 and GPLv2).
 
-You can send me comments etc. - dsheil@vartmp.com
+If you wish to e-mail me, send mail to Dennis Sheil at 
+sheet2019@unwrappedapps.com .
