@@ -30,5 +30,8 @@ comment at the beginning of the pull request.  You can get that at
 https://www.apache.org/licenses/LICENSE-2.0 (If you want, you can 
 dual-license your patch as Apache v2 and GPLv2).
 
+The XLS/XLSX spreadsheet loading is done via the Apache POI library, 
+which is under the Apache License, Version 2.0.
+
 If you wish to e-mail me, send mail to Dennis Sheil at 
 sheet2019@unwrappedapps.com .
