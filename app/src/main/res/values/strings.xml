@@ -3,6 +3,8 @@
     <string name="element_text">Element</string>
     <string name="find">Find</string>
     <string name="action_load">Load file</string>
+    <string name="action_jump">Jump to cell</string>
+    <string name="jump_hint">Enter cell (e.g. A1)</string>
 
 
 </resources>

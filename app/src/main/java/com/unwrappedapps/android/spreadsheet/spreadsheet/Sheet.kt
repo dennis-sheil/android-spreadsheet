@@ -3,6 +3,8 @@ package com.unwrappedapps.android.spreadsheet.spreadsheet
 
 open class Sheet {
 
+    val TOO_LARGE = 99999
+
     var rowList : MutableList<Row> = mutableListOf()
 
     fun getNumberOfColumns() : Int {
@@ -11,8 +13,10 @@ open class Sheet {
     }
 
     fun getRow(i : Int) : Row {
-        if (i >= rowList.size) {
-            rowList.add(Row()) // maybe do sanity check that i is not too large
+
+        // XXX: TOO_LARGE is a big number to catch bad input
+        while (i >= rowList.size && i < TOO_LARGE) {
+            rowList.add(Row())
         }
         return rowList[i]
     }

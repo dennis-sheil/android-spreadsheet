@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import com.unwrappedapps.android.spreadsheet.ui.sheet.JumpToCellFragment
 import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetFragment
 
 class SheetActivity : AppCompatActivity() {
@@ -26,6 +27,10 @@ class SheetActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.action_jump -> {
+                jumpDialog()
+                return true
+            }
             R.id.action_search -> {
                 return true
             }
@@ -36,6 +41,12 @@ class SheetActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
     }
+
+    fun jumpDialog() {
+        val newFragment = JumpToCellFragment()
+        newFragment.show(supportFragmentManager, "jump")
+    }
+
 
     fun load() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {

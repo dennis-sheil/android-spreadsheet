@@ -14,4 +14,10 @@
           android:icon="@drawable/file16"
           app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/action_jump"
+          android:title="@string/action_jump"
+          app:showAsAction="withText"/>
+
+
+
 </menu>

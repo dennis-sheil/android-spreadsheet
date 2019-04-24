@@ -71,7 +71,10 @@ class SheetFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+
+        viewModel = activity?.run {
+            ViewModelProviders.of(this).get(SheetViewModel::class.java)
+        }
 
         val topRow = viewModel?.topRow
         val leftColumn = viewModel?.leftColumn
@@ -88,6 +91,24 @@ class SheetFragment : Fragment() {
             val sheetAdapter = fragmentRecyclerView.adapter as SheetAdapter
             sheetAdapter.assignSpreadsheet(viewModel?.spreadsheet?.value)
             sheetAdapter.notifyDataSetChanged()
+        })
+
+        viewModel?.jumpCell?.observe(this, Observer<String> { item ->
+
+            val tr = viewModel?.topRow
+            val lc = viewModel?.leftColumn
+
+            if (tr != null && lc != null) {
+                SheetLayoutManager.topRow = tr
+                SheetLayoutManager.leftColumn = lc
+            }
+
+            val sheetAdapter = fragmentRecyclerView.adapter as SheetAdapter
+            sheetAdapter.notifyDataSetChanged()
+
+            val sheetLayoutManager = fragmentRecyclerView.layoutManager as SheetLayoutManager
+            sheetLayoutManager.removeAllViews()
+
         })
 
     }

@@ -442,9 +442,12 @@ class SheetLayoutManager : RecyclerView.LayoutManager() {
             val columnsEnd = getSideCount(Side.COLUMNS)
             rowDiff = initialRows - rowsEnd
             columnDiff = initialColumns - columnsEnd
-        } else {
+        } else if (initialColumns > 0 && initialRows > 0){
             rowDiff = bottomCellsGone / initialColumns
             columnDiff = rightCellsGone / initialRows
+        } else {
+            rowDiff = 0
+            columnDiff = 0
         }
         topRow = topRow + rowDiff
         leftColumn = leftColumn + columnDiff
