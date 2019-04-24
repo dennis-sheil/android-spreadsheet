@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import com.unwrappedapps.android.spreadsheet.ui.sheet.JumpToCellFragment
 import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetFragment
+import kotlinx.android.synthetic.main.sheet_fragment.*
 
 class SheetActivity : AppCompatActivity() {
 
@@ -56,9 +57,14 @@ class SheetActivity : AppCompatActivity() {
         startActivityForResult(intent, MY_REQ_READ_EXTERNAL_STORAGE)
     }
 
+    fun clearSelectBox() {
+        select.text = ""
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == MY_REQ_READ_EXTERNAL_STORAGE) {
+                clearSelectBox()
                 data?.data?.also { uri ->
                     val frag = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
                     val contentResolver = contentResolver
