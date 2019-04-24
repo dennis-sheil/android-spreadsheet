@@ -7,6 +7,8 @@ open class Sheet {
 
     var rowList : MutableList<Row> = mutableListOf()
 
+    var name : String = ""
+
     fun getNumberOfColumns() : Int {
         if (rowList.size == 0) return 0
         else return rowList[0].cellList.size

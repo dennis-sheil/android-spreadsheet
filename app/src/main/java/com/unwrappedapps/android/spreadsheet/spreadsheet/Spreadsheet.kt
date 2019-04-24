@@ -1,6 +1,8 @@
 package com.unwrappedapps.android.spreadsheet.spreadsheet
 
+import android.util.Log
 import com.unwrappedapps.android.spreadsheet.spreadsheet.csv.CsvWorkbook
+import com.unwrappedapps.android.spreadsheet.spreadsheet.ods.OdsWorkbook
 import com.unwrappedapps.android.spreadsheet.spreadsheet.poi.PoiWorkbook
 import java.io.InputStream
 
@@ -25,6 +27,9 @@ class Spreadsheet {
         }
         else if (spreadsheetFormat.equals("xlsx")) {
             workbook = PoiWorkbook(inputStream)
+        }
+        else if (spreadsheetFormat.equals("ods")) {
+            workbook = OdsWorkbook(inputStream)
         }
 
     }

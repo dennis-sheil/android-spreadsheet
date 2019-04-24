@@ -7,9 +7,7 @@ Released under the GPLv2 License (see COPYING).
 This is a spreadsheet for Android.  I began working on it in 2011, and 
 have worked on it on and off since then.
 
-Currently it can load CSV spreadsheets, XLS spreadsheets and XLSX 
-spreadsheets.  I will push up functionality I already have written where 
-it load ODS spreadsheets as well.
+Currently it can load CSV, XLS, XLSX and ODS spreedsheets.
 
 I have more functionality written that has not been pushed up yet.  This
 includes being able to search through cells.  I also have functionality
