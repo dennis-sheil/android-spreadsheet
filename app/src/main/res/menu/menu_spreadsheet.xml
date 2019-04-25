@@ -7,7 +7,7 @@
           android:title="@string/find"
           android:icon="@drawable/ic_find_in_page_black_36dp"
           app:showAsAction="collapseActionView|ifRoom"
-          app:actionViewClass="android.widget.SearchView" />
+          app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
     <item android:id="@+id/action_load"
           android:title="@string/action_load"

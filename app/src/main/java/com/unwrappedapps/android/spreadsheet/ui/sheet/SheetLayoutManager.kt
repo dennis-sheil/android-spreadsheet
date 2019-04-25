@@ -53,7 +53,7 @@ class SheetLayoutManager : RecyclerView.LayoutManager() {
 
     // mark when search done to prevent onLayoutChildren call
     // this may need to be made more complex than a boolean
-    fun doSearch() {
+    fun startSearch() {
         skipLayoutForSearch = true
     }
 

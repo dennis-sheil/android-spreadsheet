@@ -5,16 +5,26 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import com.unwrappedapps.android.spreadsheet.ui.sheet.JumpToCellFragment
 import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetFragment
 import kotlinx.android.synthetic.main.sheet_fragment.*
+import android.app.SearchManager
+import android.content.Context
+import android.os.AsyncTask
+import android.util.Log
+import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.ViewModelProviders
+import com.unwrappedapps.android.spreadsheet.spreadsheet.Spreadsheet
+import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetViewModel
+import java.lang.ref.WeakReference
+
 
 class SheetActivity : AppCompatActivity() {
 
-    val MY_REQ_READ_EXTERNAL_STORAGE : Int = 93
+    val MY_REQ_READ_EXTERNAL_STORAGE : Int = 93 // random magic number
 
+    var lastSearch : LastSearch = resetLastSearch()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,24 +84,86 @@ class SheetActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_spreadsheet, menu)
 
-        val searchItem = menu?.findItem(R.id.action_search)
-        searchItem?.setOnActionExpandListener(object: MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
-                val frag = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
-                frag.doSearch()
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        menuInflater.inflate(R.menu.menu_spreadsheet, menu)
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView = menu?.findItem(R.id.action_search)?.getActionView() as SearchView
+        val menuItem = menu.findItem(R.id.action_search)
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+
+        searchView.setSubmitButtonEnabled(true)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(s: String): Boolean {
+                search(s)
+                return false
+            }
+
+            override fun onQueryTextChange(s: String): Boolean {
+                return false
+            }
+        })
+
+        searchView.setOnCloseListener(object : SearchView.OnCloseListener {
+            override fun onClose(): Boolean {
+                return false
+            }
+        })
+
+        menuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                lastSearch = resetLastSearch()
                 return true
             }
 
-            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                startSearch()
                 return true
             }
         })
 
         return true
     }
+
+
+    fun search(string: String) {
+
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+        val sheet = viewModel.spreadsheet.value
+
+        sheet?.let {
+            val searchData = SearchData(string, it, lastSearch)
+            SearchTask(this).execute(searchData)
+        }
+    }
+
+
+    fun startSearch() {
+        val frag = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
+        frag.startSearch()
+    }
+
+    fun doSearchJump() {
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+
+        // need to add space for column and row markers
+        viewModel.leftColumn = lastSearch.column+1
+        viewModel.topRow = lastSearch.row+1
+
+        val fragment = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
+        fragment.processSearchJump()
+    }
+
+    fun resetLastSearch() : LastSearch {
+        return LastSearch(0,0,"")
+    }
+
+
+    data class SearchData(val string: String, val sheet: Spreadsheet, val lastSearch: LastSearch)
+    data class LastSearch(val row: Int, val column: Int, val word: String)
 
 }

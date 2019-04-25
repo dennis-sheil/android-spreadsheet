@@ -25,9 +25,9 @@ class SheetFragment : Fragment() {
 
     private var viewModel: SheetViewModel? = null
 
-    fun doSearch() {
+    fun startSearch() {
         val sheetLayoutManager = fragmentRecyclerView.layoutManager as SheetLayoutManager
-        sheetLayoutManager.doSearch()
+        sheetLayoutManager.startSearch()
     }
 
     override fun onResume() {
@@ -36,6 +36,10 @@ class SheetFragment : Fragment() {
         sheetLayoutManager.removeAllViews()
         fragmentRecyclerView.adapter?.notifyDataSetChanged()
         sheetLayoutManager.resetLayoutManagerSearch()
+    }
+
+    fun processSearchJump() {
+        jumpToNewCoordinates().resetLayoutManagerSearch()
     }
 
     override fun onCreateView(
@@ -94,22 +98,26 @@ class SheetFragment : Fragment() {
         })
 
         viewModel?.jumpCell?.observe(this, Observer<String> { item ->
-
-            val tr = viewModel?.topRow
-            val lc = viewModel?.leftColumn
-
-            if (tr != null && lc != null) {
-                SheetLayoutManager.topRow = tr
-                SheetLayoutManager.leftColumn = lc
-            }
-
-            val sheetAdapter = fragmentRecyclerView.adapter as SheetAdapter
-            sheetAdapter.notifyDataSetChanged()
-
-            val sheetLayoutManager = fragmentRecyclerView.layoutManager as SheetLayoutManager
-            sheetLayoutManager.removeAllViews()
-
+            jumpToNewCoordinates()
         })
+    }
+
+
+    fun jumpToNewCoordinates() : SheetLayoutManager {
+        val tr = viewModel?.topRow
+        val lc = viewModel?.leftColumn
+
+        if (tr != null && lc != null) {
+            SheetLayoutManager.topRow = tr
+            SheetLayoutManager.leftColumn = lc
+        }
+
+        val sheetAdapter = fragmentRecyclerView.adapter as SheetAdapter
+        sheetAdapter.notifyDataSetChanged()
+
+        val sheetLayoutManager = fragmentRecyclerView.layoutManager as SheetLayoutManager
+        sheetLayoutManager.removeAllViews()
+        return sheetLayoutManager
 
     }
 
