@@ -9,10 +9,10 @@ have worked on it on and off since then.
 
 Currently it can load CSV, XLS, XLSX and ODS spreedsheets.
 
-I have more functionality written that has not been pushed up yet.  This
-includes being able to search through cells.  I also have functionality
-to push up which loads all sheets of a spreadsheet, which use multiple
-tabs on-screen.  The app can handle rows and columns of different sizes.
+I have more functionality written that has not been pushed up yet.  This 
+includes functionality that loads all sheets of a spreadsheet, which 
+uses multiple tabs on-screen.  The app can handle rows and columns of 
+different sizes.
 
 I also have functionality to save files, although I will work on that 
 more before pushing it up.
