@@ -22,10 +22,14 @@ already done and just need to be pushed up.  I wanted to get the code
 out there though.
 
 If you send a pull request or patch, have the license for the patch be 
-Apache License, Version 2.0.  Include the full license boilerplate as a 
-comment at the beginning of the pull request.  You can get that at 
-https://www.apache.org/licenses/LICENSE-2.0 (If you want, you can 
-dual-license your patch as Apache v2 and GPLv2).
+Apache License, Version 2.0.  Include the license boilerplate as a 
+comment at the beginning of the pull request.  You can get that here 
+https://www.apache.org/licenses/LICENSE-2.0#apply .  Replace the 
+brackets with the current year and copyright owner, which is yourself 
+(or you can also assign copyright to Unwrapped Inc., although this is 
+not required).
+
+(If you want, you can dual-license your patch as Apache v2 and GPLv2).
 
 The XLS/XLSX spreadsheet loading is done via the Apache POI library, 
 which is under the Apache License, Version 2.0.
