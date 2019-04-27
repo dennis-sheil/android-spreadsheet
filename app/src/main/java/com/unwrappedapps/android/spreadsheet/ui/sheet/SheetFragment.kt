@@ -1,7 +1,5 @@
 package com.unwrappedapps.android.spreadsheet.ui.sheet
 
-import android.content.ContentResolver
-import android.net.Uri
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -14,6 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.unwrappedapps.android.spreadsheet.R
 import com.unwrappedapps.android.spreadsheet.spreadsheet.Spreadsheet
 import kotlinx.android.synthetic.main.sheet_fragment.view.*
+
+/*
+
+TODO: when screen rotates in 2nd, 3rd, 4th etc. sheet, have the
+left top cell remain the same (do not reset to A1)
+
+
+ */
 
 class SheetFragment : Fragment() {
 
@@ -58,7 +64,7 @@ class SheetFragment : Fragment() {
 
         val density = displayMetrics.density.toInt()
 
-        val sheetAdapter = SheetAdapter(density, view.select)
+        val sheetAdapter = SheetAdapter(density, activity?.findViewById(R.id.select))
 
         sheetAdapter.assignSpreadsheet(Spreadsheet())
 
@@ -74,7 +80,6 @@ class SheetFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
 
         viewModel = activity?.run {
             ViewModelProviders.of(this).get(SheetViewModel::class.java)
@@ -121,10 +126,9 @@ class SheetFragment : Fragment() {
 
     }
 
-    fun processUri(uri : Uri, contentResolver: ContentResolver) {
+    fun processUri() {
         val sheetLayoutManager = fragmentRecyclerView.layoutManager as SheetLayoutManager
         sheetLayoutManager.resetToTopLeft()
-        viewModel?.processUri(uri, contentResolver)
     }
 
     override fun onDestroy() {

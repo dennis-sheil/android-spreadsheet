@@ -9,6 +9,8 @@ class PoiSheet() : com.unwrappedapps.android.spreadsheet.spreadsheet.Sheet() {
     constructor(sheet: org.apache.poi.ss.usermodel.Sheet) : this() {
         pSheet = sheet
 
+        name = pSheet.sheetName
+
         val numberOfRows = sheet.physicalNumberOfRows
 
         for (i in 0..numberOfRows-1) {

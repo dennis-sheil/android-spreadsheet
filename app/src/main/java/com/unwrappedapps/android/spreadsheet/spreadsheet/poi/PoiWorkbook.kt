@@ -1,30 +1,23 @@
 package com.unwrappedapps.android.spreadsheet.spreadsheet.poi
 
 import com.unwrappedapps.android.spreadsheet.spreadsheet.Workbook
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.InputStream
 
 open class PoiWorkbook (inputStream: InputStream): Workbook() {
 
     init {
-
         // hssf/xssf
         val workbook : org.apache.poi.ss.usermodel.Workbook = WorkbookFactory.create(inputStream)
 
-        val poiSheet = workbook.getSheetAt(0)
+        sheetList.clear()
 
-        val pSheet : PoiSheet
-
-        pSheet = PoiSheet(poiSheet)
-
-        if (sheetList.size > 1) {
-            sheetList.clear()
+        for (i in 0 until workbook.numberOfSheets) {
+            val poiSheet = workbook.getSheetAt(i)
+            val pSheet : PoiSheet
+            pSheet = PoiSheet(poiSheet)
+            sheetList.add(pSheet)
         }
-
-        sheetList.set(0, pSheet)
-
     }
 
     companion object {

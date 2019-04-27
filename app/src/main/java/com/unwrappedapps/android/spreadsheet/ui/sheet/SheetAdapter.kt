@@ -12,7 +12,7 @@ import com.unwrappedapps.android.spreadsheet.spreadsheet.Spreadsheet
 import android.view.Gravity
 
 
-class SheetAdapter(val density: Int, var select: TextView) :
+class SheetAdapter(val density: Int, var select: TextView?) :
     RecyclerView.Adapter<SheetAdapter.ViewHolder>() {
 
     companion object {
@@ -29,7 +29,7 @@ class SheetAdapter(val density: Int, var select: TextView) :
     }
 
     init {
-        select.text = ""
+        select?.text = ""
     }
 
     fun assignSpreadsheet(ss : Spreadsheet?) {
@@ -130,7 +130,7 @@ class SheetAdapter(val density: Int, var select: TextView) :
 
         viewHolder.textView.setOnClickListener(
             {
-                select.text = cellsValue
+                select?.text = cellsValue
             })
     }
 

@@ -6,21 +6,30 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import com.unwrappedapps.android.spreadsheet.ui.sheet.JumpToCellFragment
-import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetFragment
-import kotlinx.android.synthetic.main.sheet_fragment.*
 import android.app.SearchManager
 import android.content.Context
-import android.os.AsyncTask
-import android.util.Log
+import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.unwrappedapps.android.spreadsheet.spreadsheet.Spreadsheet
-import com.unwrappedapps.android.spreadsheet.ui.sheet.SheetViewModel
-import java.lang.ref.WeakReference
+import com.unwrappedapps.android.spreadsheet.ui.sheet.*
+import kotlinx.android.synthetic.main.tab_activity.*
 
 
 class SheetActivity : AppCompatActivity() {
+
+    lateinit var mPager: SheetViewPager
+    var mSpreadsheetStatePagerAdapter: SpreadsheetStatePagerAdapter? = null
+
+    var tabCount = 1
+
+    var selectedTab = 0
 
     val MY_REQ_READ_EXTERNAL_STORAGE : Int = 93 // random magic number
 
@@ -28,13 +37,134 @@ class SheetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.sheet_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, SheetFragment.newInstance())
-                .commitNow()
-        }
+
+        setContentView(R.layout.tab_activity)
+
+        tabSetup()
+
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+
+        viewModel.sheetLoadState.observe(this , Observer {
+            postSpreadsheetLoad()
+        })
     }
+
+    private fun tabSetup() {
+
+        val numberOfTabs = tabCount
+
+        val tabLayout = findViewById<View>(R.id.tab_layout) as TabLayout
+        val tab = arrayOfNulls<TabLayout.Tab>(numberOfTabs)
+
+        for (i in 0 until numberOfTabs) {
+            tab[i] = tabLayout.newTab()
+        }
+
+        for (i in 0 until numberOfTabs) {
+            tabLayout.addTab(tab[i]!!)
+        }
+
+        // create Fragment Pager Adapter
+        //FragmentManager.enableDebugLogging(true);
+
+        mSpreadsheetStatePagerAdapter = SpreadsheetStatePagerAdapter(
+            supportFragmentManager)
+
+        mPager = view_pager
+
+        // attach adapter to viewpager
+        mPager.setAdapter(mSpreadsheetStatePagerAdapter)
+
+        // attach viewpager to tab layout
+        tabLayout.setupWithViewPager(mPager)
+
+        // action to do when page changed
+        setViewPagerListener(mPager)
+    }
+
+    fun postSpreadsheetLoad() {
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+
+        val spreadsheet = viewModel.spreadsheet.value
+
+        if (spreadsheet != null) {
+
+            val tableCount = spreadsheet.workbook.sheetList.size
+
+            val list = mutableListOf<String>()
+
+            for (i in 0 until tableCount) {
+                val name = spreadsheet.workbook.sheetList[i].name
+                list.add(name)
+            }
+
+            val numberOfTabs = tableCount
+
+            val tabLayout = findViewById<View>(R.id.tab_layout) as TabLayout
+            val tab = arrayOfNulls<TabLayout.Tab>(numberOfTabs)
+
+            mSpreadsheetStatePagerAdapter?.setNames(list)
+
+            mSpreadsheetStatePagerAdapter?.notifyDataSetChanged()
+
+            tabLayout.removeAllTabs()
+
+            for (i in 0 until numberOfTabs) {
+                val name = spreadsheet.workbook.sheetList[i].name
+                val newTab = tabLayout.newTab()
+                newTab.setText(name)
+                tab[i] = newTab
+            }
+
+            for (i in 0 until numberOfTabs) {
+                tabLayout.addTab(tab[i]!!)
+            }
+
+            tabCount = numberOfTabs
+
+
+            mSpreadsheetStatePagerAdapter?.notifyDataSetChanged()
+        }
+
+
+    }
+
+    private fun setViewPagerListener(mPager: SheetViewPager) {
+
+        mPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+            override fun onPageSelected(position: Int) {
+                tabSelected(position)
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageScrollStateChanged(state: Int) {}
+        })
+    }
+
+    private fun tabSelected(position: Int) {
+        selectedTab = position
+
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+        viewModel.topRow = 1
+        viewModel.leftColumn = 1
+        SheetLayoutManager.topRow = 1
+        SheetLayoutManager.leftColumn = 1
+
+        val spreadsheet = viewModel.spreadsheet.value
+
+        spreadsheet?.workbook?.currentSheet = selectedTab
+
+        val frag = mSpreadsheetStatePagerAdapter?.instantiateItem(mPager, mPager.currentItem) as SheetFragment
+
+        val sheetAdapter = frag.fragmentRecyclerView.adapter as SheetAdapter
+
+
+        sheetAdapter.notifyDataSetChanged()
+
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
@@ -60,6 +190,13 @@ class SheetActivity : AppCompatActivity() {
 
 
     fun load() {
+
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+        viewModel.topRow = 1
+        viewModel.leftColumn = 1
+        SheetLayoutManager.topRow = 1
+        SheetLayoutManager.leftColumn = 1
+
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
@@ -76,9 +213,12 @@ class SheetActivity : AppCompatActivity() {
             if (requestCode == MY_REQ_READ_EXTERNAL_STORAGE) {
                 clearSelectBox()
                 data?.data?.also { uri ->
-                    val frag = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
-                    val contentResolver = contentResolver
-                    frag.processUri(uri, contentResolver)
+
+                    val frag = mSpreadsheetStatePagerAdapter?.instantiateItem(mPager, mPager.currentItem) as SheetFragment
+                    frag.processUri()
+
+                    val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+                    viewModel.processUri(uri, contentResolver)
                 }
             }
         }
@@ -141,9 +281,9 @@ class SheetActivity : AppCompatActivity() {
         }
     }
 
-
     fun startSearch() {
-        val frag = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
+
+        val frag = mSpreadsheetStatePagerAdapter?.instantiateItem(mPager, mPager.currentItem) as SheetFragment
         frag.startSearch()
     }
 
@@ -154,7 +294,7 @@ class SheetActivity : AppCompatActivity() {
         viewModel.leftColumn = lastSearch.column+1
         viewModel.topRow = lastSearch.row+1
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.container) as SheetFragment
+        val fragment = mSpreadsheetStatePagerAdapter?.instantiateItem(mPager, mPager.currentItem) as SheetFragment
         fragment.processSearchJump()
     }
 
@@ -162,8 +302,53 @@ class SheetActivity : AppCompatActivity() {
         return LastSearch(0,0,"")
     }
 
+    fun getSheetString() : String {
+        return getString(R.string.sheet)
+    }
 
     data class SearchData(val string: String, val sheet: Spreadsheet, val lastSearch: LastSearch)
     data class LastSearch(val row: Int, val column: Int, val word: String)
+
+    inner class SpreadsheetStatePagerAdapter(fragmentManager: FragmentManager) :
+            FragmentStatePagerAdapter(fragmentManager) {
+
+        var nameList : MutableList<String> = mutableListOf()
+
+        fun setNames(list : MutableList<String>) {
+            nameList = list
+        }
+
+        override fun getItem(position: Int): Fragment {
+
+            val fragment = SheetFragment.newInstance()
+
+            /*
+            fragment.arguments = Bundle().apply {
+                putInt("num", position)
+            }
+            */
+
+            return fragment
+        }
+
+        override fun getPageTitle(position: Int): CharSequence? {
+
+            val titlePos = position + 1
+
+            if (nameList.size > position) {
+
+                val n = nameList[position]
+                return n
+            } else {
+                val sheetString = getSheetString()
+                return "$sheetString $titlePos"
+            }
+        }
+
+        override fun getCount(): Int {
+            return tabCount
+        }
+
+    }
 
 }
