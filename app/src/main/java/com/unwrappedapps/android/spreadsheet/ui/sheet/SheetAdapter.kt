@@ -114,13 +114,17 @@ class SheetAdapter(val density: Int, var select: TextView?) :
 
         viewHolder.textView.text = cellsValue
 
-        val width = ROW_MARKER_WIDTH * density
+        if (sheet.columnWidths.size > c) {
+            val baseWidth = sheet.columnWidths[c]
+            val denseWidth = baseWidth * density
+            viewHolder.textView.width = denseWidth
+        } else {
+            viewHolder.textView.width = ROW_MARKER_WIDTH*density*2
+        }
 
-        viewHolder.textView.width = width*2
+        val denseHeight = density * sheet.getRow(r).height
 
-        val hh = density * sheet.getRow(r).height
-
-        viewHolder.textView.height = hh
+        viewHolder.textView.height = denseHeight
 
         //val alpha = 0;
         val alpha = 255
@@ -148,9 +152,9 @@ class SheetAdapter(val density: Int, var select: TextView?) :
         val workbook = spreadsheet?.workbook
         val sheet = workbook?.sheetList?.get(workbook.currentSheet)
         val height = sheet?.getRow(row)?.height ?: ROW_HEIGHT
-        val hh = density * height
+        val denseHeight = density * height
 
-        viewHolder.textView.height = hh
+        viewHolder.textView.height = denseHeight
         setBackground(viewHolder)
 
         val rm = Integer.toString(row)
@@ -163,18 +167,31 @@ class SheetAdapter(val density: Int, var select: TextView?) :
     }
 
 
+    // must be wide enough for 2-3 letter column markers
     private fun makeColumnMarker(viewHolder: ViewHolder, position: Int) {
 
         val (_, c) = posToMarkers(position)
 
-        // must be wide enough for 2-3 letter column markers
+        val workbook = spreadsheet?.workbook
+        val sheet = workbook?.sheetList?.get(workbook.currentSheet)
 
-        val width = ROW_MARKER_WIDTH * density
+        val size = sheet?.columnWidths?.size
 
         if (position == 0) {
-            viewHolder.textView.width = width
+            viewHolder.textView.width = ROW_MARKER_WIDTH * density
+
         } else {
-            viewHolder.textView.width = width*2
+            if (size != null) {
+                if (size >= c) {
+                    val baseWidth = sheet.columnWidths[c-1]
+                    val denseWidth = baseWidth * density
+                    viewHolder.textView.width = denseWidth
+                } else {
+                    viewHolder.textView.width = ROW_MARKER_WIDTH * density * 2
+                }
+            } else {
+                viewHolder.textView.width = ROW_MARKER_WIDTH * density * 2
+            }
         }
 
         setBackground(viewHolder)

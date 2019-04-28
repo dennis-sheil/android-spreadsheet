@@ -12,9 +12,8 @@ Currently it can load CSV, XLS, XLSX and ODS spreedsheets.
 I have functionality to save files, although I will work on that more before
 pushing it up.  Other things are a priority before doing that right.
 
-There are a lot of little things that need to be done, such as displaying
-proper row and column sizes.  I will work on it as I can, and accept
-pull requests and patches as well.
+There are a lot of little things that need to be done.  I will work on them
+as I can, and accept pull requests and patches as well.
 
 If you send a pull request or patch, have the license for the patch be 
 Apache License, Version 2.0.  Include the license boilerplate as a 
