@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.app.SearchManager
 import android.content.Context
+import android.net.Uri
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -47,6 +48,41 @@ class SheetActivity : AppCompatActivity() {
         viewModel.sheetLoadState.observe(this , Observer {
             postSpreadsheetLoad()
         })
+
+        checkViewIntents(intent)
+    }
+
+    fun checkViewIntents(intent: Intent?) {
+        if (intent == null) return
+        val action = intent.action
+        if (Intent.ACTION_VIEW.equals(action)) {
+            val type = intent.type
+            if (type != null) {
+                val uri = intent.data
+                if (uri != null) {
+                    val csvMime = "text/comma-separated-values"
+                    val odsMime = "application/vnd.oasis.opendocument.spreadsheet"
+                    val xlsMime = "application/vnd.ms-excel"
+                    val xlsxMime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+                    if (type.equals(csvMime)) {
+                        handleViewIntent(uri)
+                    } else if (type.equals(odsMime)) {
+                        handleViewIntent(uri)
+                    } else if (type.equals(xlsMime) || type.equals(xlsxMime)) {
+                        handleViewIntent(uri)
+                    }
+                }
+            }
+        }
+        // else if (Intent.ACTION_SEARCH.equals(action))
+    }
+
+    fun handleViewIntent(uri : Uri) {
+
+        val viewModel = ViewModelProviders.of(this).get(SheetViewModel::class.java)
+        viewModel.processUri(uri, contentResolver)
+        postSpreadsheetLoad()
     }
 
     private fun tabSetup() {
@@ -267,6 +303,12 @@ class SheetActivity : AppCompatActivity() {
         })
 
         return true
+    }
+
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkViewIntents(intent)
     }
 
 
