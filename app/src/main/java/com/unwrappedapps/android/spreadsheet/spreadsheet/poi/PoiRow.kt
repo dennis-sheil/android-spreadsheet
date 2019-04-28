@@ -3,10 +3,14 @@ package com.unwrappedapps.android.spreadsheet.spreadsheet.poi
 
 class PoiRow() : com.unwrappedapps.android.spreadsheet.spreadsheet.Row() {
 
+    val magicHeightDiv = 5
+
     lateinit var pRow : org.apache.poi.ss.usermodel.Row
 
     constructor(row: org.apache.poi.ss.usermodel.Row) : this() {
         pRow = row
+
+        height = pRow.height / magicHeightDiv
 
         val numberOfCells = pRow.physicalNumberOfCells
 

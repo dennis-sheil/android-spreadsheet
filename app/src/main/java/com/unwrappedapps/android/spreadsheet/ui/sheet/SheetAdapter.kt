@@ -15,6 +15,7 @@ import android.view.Gravity
 class SheetAdapter(val density: Int, var select: TextView?) :
     RecyclerView.Adapter<SheetAdapter.ViewHolder>() {
 
+
     companion object {
         private var spreadsheet: Spreadsheet? = null
 
@@ -26,6 +27,8 @@ class SheetAdapter(val density: Int, var select: TextView?) :
         //36 can do 4 digits
         //private val ROW_MARKER_WIDTH = 45
         private const val ROW_MARKER_WIDTH = 50
+
+        private const val ROW_HEIGHT = 60
     }
 
     init {
@@ -115,7 +118,9 @@ class SheetAdapter(val density: Int, var select: TextView?) :
 
         viewHolder.textView.width = width*2
 
-        viewHolder.textView.height = density * 60
+        val hh = density * sheet.getRow(r).height
+
+        viewHolder.textView.height = hh
 
         //val alpha = 0;
         val alpha = 255
@@ -137,22 +142,24 @@ class SheetAdapter(val density: Int, var select: TextView?) :
 
     private fun makeRowMarker(viewHolder: ViewHolder, position: Int) {
 
-        val (row) = posToMarkers(position)
+        var (row,_) = posToMarkers(position)
 
-        viewHolder.textView.height = 30 * density
+        row--
+        val workbook = spreadsheet?.workbook
+        val sheet = workbook?.sheetList?.get(workbook.currentSheet)
+        val height = sheet?.getRow(row)?.height ?: ROW_HEIGHT
+        val hh = density * height
 
+        viewHolder.textView.height = hh
         setBackground(viewHolder)
 
         val rm = Integer.toString(row)
-
         val width = ROW_MARKER_WIDTH * density
 
-        viewHolder.textView.height = density * 60
-
+        viewHolder.textView.height = density * height
         viewHolder.textView.setWidth(width)
         viewHolder.textView.setText(rm)
         viewHolder.textView.setGravity(Gravity.CENTER)
-
     }
 
 
