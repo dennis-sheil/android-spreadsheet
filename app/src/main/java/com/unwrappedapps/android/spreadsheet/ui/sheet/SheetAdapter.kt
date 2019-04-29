@@ -157,7 +157,8 @@ class SheetAdapter(val density: Int, var select: TextView?) :
         viewHolder.textView.height = denseHeight
         setBackground(viewHolder)
 
-        val rm = Integer.toString(row)
+        val rm = Integer.toString(row+1)
+
         val width = ROW_MARKER_WIDTH * density
 
         viewHolder.textView.height = density * height
