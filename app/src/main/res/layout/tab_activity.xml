@@ -38,6 +38,8 @@
             app:tabSelectedTextColor="@android:color/white"
             app:tabIndicatorColor="@android:color/white"
             app:tabTextAppearance="@style/MyTabText"
+            app:tabMinWidth="24sp"
+            app:tabMode="scrollable"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             app:layout_constraintTop_toBottomOf="@id/view_pager"
